@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --surface: #f5f7fb;
+  --card: #ffffff;
+  --border: #e3e7ef;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --muted: #8a8984;
+  --grid: #eceae4;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --good: #0f7b3e;
+  --bad: #c62828;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --surface: #121417;
+    --card: #1a1c20;
+    --border: #2b2f36;
+    --text: #ffffff;
+    --text-2: #c3c2b7;
+    --muted: #8f8e88;
+    --grid: #2c2c2a;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --good: #4cc27f;
+    --bad: #ef6b6b;
+  }
+}
+
+body {
+  background: var(--surface);
+  color: var(--text);
+  @apply font-sans antialiased;
+}
+
+@layer components {
+  .card { @apply rounded-xl border p-5 shadow-sm; background: var(--card); border-color: var(--border); }
+  .btn { @apply inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition disabled:opacity-50; }
+  .btn-primary { @apply btn bg-navy-700 text-white hover:bg-navy-600; }
+  .btn-ghost { @apply btn border hover:bg-black/5 dark:hover:bg-white/5; border-color: var(--border); }
+  .input { @apply w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-navy-500/40;
+    background: var(--card); border-color: var(--border); }
+  .label { @apply mb-1 block text-xs font-medium uppercase tracking-wide; color: var(--text-2); }
+  .muted { color: var(--text-2); }
+  .table { @apply w-full text-left text-sm; }
+  .table th { @apply border-b px-3 py-2 text-xs font-semibold uppercase tracking-wide; color: var(--text-2); border-color: var(--border); }
+  .table td { @apply border-b px-3 py-2; border-color: var(--border); }
+  .pill { @apply inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium; }
+  .ok-pill { @apply pill bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300; }
+  .bad-pill { @apply pill bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300; }
+  .info-pill { @apply pill bg-navy-50 text-navy-700 dark:bg-navy-900 dark:text-navy-100; }
+}

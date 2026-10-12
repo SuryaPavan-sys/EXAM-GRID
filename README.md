@@ -1,67 +1,92 @@
 # ExamGrid
 
-Automated exam timetabling, seating and invigilation for engineering colleges.
-The demo data is modelled on SRKR Engineering College (Autonomous), Bhimavaram.
+ExamGrid automates exam timetabling, seating and invigilation for **SRKR Engineering College
+(Autonomous), Bhimavaram**, for the NOV-2026 semester-end exams, using SRKR's real R23 curriculum.
 
-Exam cells usually plan timetables, seating and invigilation duties by hand in spreadsheets.
-That leads to:
-- clashes for backlog students
-- students with the same subject sitting next to each other
-- uneven invigilation duties
-- rooms booked for students who never turn up
+Exam cells usually plan exams by hand in spreadsheets. That causes clashes for backlog
+students, same-paper students sitting side by side, uneven invigilation duties, and rooms booked
+for students who never come. ExamGrid plans the whole cycle in about a minute and proves every
+rule with an independent checker.
 
-ExamGrid automates the whole pipeline:
+## Results on the full SRKR dataset
 
-1. **Data import:** CSV upload of students, subjects, registrations, rooms and faculty, with validation.
-2. **Timetable:** graph colouring (DSatur) over a subject conflict graph. No student has two exams
-   in one session, and every session fits within the seat capacity.
-3. **Turnout prediction:** a regression model on past attendance estimates how many students will
-   actually attend, so fewer rooms and invigilators are booked.
-4. **Seating and invigilation:** a constraint solver.
-   - Seating: no same-subject neighbours, ground-floor seats for students who need them, rooms filled evenly.
-   - Invigilation: no one gets a duty for their own subject, there are no double bookings, and duties are spread evenly.
-5. **Review and publish:** a drag-and-drop seat editor with live rule checks, a student seat lookup,
-   faculty duty lists, and hall tickets with QR codes.
-
-## Architecture
-
-```
-React (UI)  →  Node.js + Express (API, auth)  →  MongoDB
-                    │                 │
-                    ▼                 ▼
-      Python (FastAPI)          Java (Spring Boot)
-      timetable + turnout       seating + duty solver
-```
-
-| Layer | Technology |
+| | |
 |---|---|
-| Frontend | React (Vite), Tailwind CSS, dnd-kit, Recharts |
-| Backend API | Node.js, Express, JWT |
-| Database | MongoDB, Mongoose |
-| Scheduling & ML | Python, FastAPI, NetworkX, scikit-learn, pandas |
-| Optimisation | Java 17+, Spring Boot, Timefold Solver |
-| DevOps | Docker Compose, GitHub |
+| Students / papers | **7,551** students in 12 branches, 280 R23 subjects, **40,919** papers (1,277 supply) |
+| Timetable | 18 days, 34 sessions · **0 clashes** · 0 regular students with two exams in a day · 1.2 s |
+| Spacing | students with back-to-back exam days cut from 30.9% to **7.4%** |
+| Turnout model | ridge regression, **0.96%** session error on an unseen cycle; it rediscovers the true attendance effects |
+| Seating | all 40,919 seated · **0 same-paper neighbours** (left/right/front/back) · ground-floor needs met |
+| Invigilation | 1,932 duties · 0 own-subject · 0 double-booked · leave respected · 2–5 duties each |
 
-## Status
+## How it works
 
-- [x] SRKR datasets on the real R23 curriculum, as CSV and Excel: [`data/`](data/README.md)
-- [x] Timetable service (DSatur + seat capacity + local search, FastAPI): [`services/scheduler/`](services/scheduler/README.md).
-  On the full SRKR data: 7,551 students, 280 subjects, **0 clashes**, 18 days, 1.2 s.
-- [x] Turnout prediction: ridge regression, backtested on an unseen cycle (0.96% session error).
-  It rediscovers the true attendance effects and books about 2% fewer seats, rooms and
-  invigilator duties with a safety margin.
-- [ ] Seating and invigilation solver
-- [ ] API, dashboard and seat editor
-- [ ] Hall tickets, room charts and deployment
+```
+ React website (Vite, Tailwind, Recharts, dnd-kit)
+        │
+ Node.js + Express  ── JWT login (admin / faculty / student), seat editor, hall tickets (PDF + QR)
+        │ runs the pipeline
+        ├── Python  services/scheduler   timetable: conflict graph + DSatur colouring + local search
+        │                                turnout:   ridge regression, backtested
+        └── Java    services/solver      seating + invigilation: Timefold constraint solver
+```
 
-## Datasets
+1. **Timetable (graph colouring).** Each subject is a node, linked to every subject that shares
+   a student. A hand-written **DSatur** algorithm gives each subject a session without going over
+   the seats. Local search then spreads out each student's exams.
+   [details](services/scheduler/README.md)
+2. **Turnout (machine learning).** A regression model learns from past attendance by paper type,
+   FN/AN, weekday, year and gap since the last exam. Seats are booked as expected + 3σ + the worst
+   backtest miss.
+3. **Seating (constraint solving).** Each room is a chessboard, and each paper takes one colour,
+   so same-paper students can never be neighbours. **Timefold** packs students into rooms (seats,
+   ground floor) while opening as few rooms as possible and keeping each subject together.
+4. **Invigilation (constraint solving).** Timefold assigns faculty under these rules: never their
+   own subject, never two rooms at once, leave respected, duty caps by designation, fair load.
+5. **Website.** Dashboard, timetable, seating editor (drag and drop, rules checked live), duties,
+   turnout model, CSV import validation, one-click re-planning, student seat lookup, and hall
+   tickets with a QR verification code.
+
+## Run the website
 
 ```bash
-python scripts/generate_datasets.py                  # full SRKR size (~6,500 students)
-python scripts/generate_datasets.py --scale small    # ~700 students, for tests
+start.cmd
 ```
 
-All data is synthetic. Only SRKR's public formats (roll numbers, subject codes, branch codes,
-intake) are copied, and no real student or staff data is included. See
-[data/README.md](data/README.md) for the schema, the assumptions made, and the hidden attendance
-rule the turnout model is evaluated against.
+Then open **http://localhost:3000**. The login page shows the demo accounts (from
+`web/server/seed/users.json`).
+
+## Run everything from scratch
+
+```bash
+python scripts/generate_datasets.py                       # SRKR datasets (data/full) + Excel
+cd services/scheduler && python -m venv .venv && .venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\python -m examgrid_scheduler.cli ..\..\data\full --out ..\..\output\full
+.venv\Scripts\python -m examgrid_scheduler.turnout_cli ..\..\data\full --timetable ..\..\output\full\timetable.csv --out ..\..\output\full
+cd ..\solver && mvn package                                # needs Java 21 + Maven
+java -jar target\examgrid-solver-0.1.0.jar batch ..\..\data\full ..\..\output\full
+```
+
+After the first run, the website's **Data & pipeline → Run full pipeline** button repeats the
+last three steps.
+
+## Project layout
+
+| Folder | What |
+|---|---|
+| `data/` | SRKR datasets, as CSV and Excel ([data card](data/README.md)) |
+| `scripts/` | dataset generator, SRKR syllabus parser, Excel export |
+| `services/scheduler/` | Python: timetable (DSatur) + turnout model + FastAPI (port 8001) |
+| `services/solver/` | Java 21 + Spring Boot + Timefold: seating + invigilation (port 8002) |
+| `web/server/` | Node + Express API, auth, PDFs, pipeline runner (port 3000) |
+| `web/client/` | React website |
+
+## Honest notes
+
+- All people and attendance data are **synthetic**. Only SRKR's public formats and curriculum are real.
+- Backlog (supply) students may write FN + AN on the same day. The full data contains a 16-subject
+  clique, so "one exam a day for everyone" cannot fit an 18-day window. Regular students always get
+  one exam a day.
+- Turnout prediction saves about **2%** of seats and duties, not the 10–20% first assumed: at
+  SRKR-like attendance, only about 5.7% of papers go unattended.
+- Storage is file-based (CSV/JSON in `output/`). MongoDB is planned but not wired in yet.

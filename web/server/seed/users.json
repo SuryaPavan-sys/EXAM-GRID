@@ -1,0 +1,7 @@
+{
+  "_note": "Demo accounts for the local ExamGrid demo only. Change these (or set env vars) before any real deployment.",
+  "admin": { "username": "admin", "password": "ExamGrid@2026", "name": "Exam Cell Admin" },
+  "faculty_password": "faculty123",
+  "student_password": "student123",
+  "examples": { "faculty_id": "SRKR0002", "roll_no": "24B91A0510" }
+}

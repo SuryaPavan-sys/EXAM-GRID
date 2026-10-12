@@ -1,0 +1,20 @@
+{
+  "name": "examgrid-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ExamGrid API: auth, data, seat editor, hall tickets, pipeline orchestration",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "bcryptjs": "2.4.3",
+    "csv-parse": "5.5.6",
+    "express": "4.21.1",
+    "jsonwebtoken": "9.0.2",
+    "pdfkit": "0.15.0",
+    "qrcode": "1.5.4"
+  }
+}
