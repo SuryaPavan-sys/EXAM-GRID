@@ -25,6 +25,9 @@ target/
 .DS_Store
 Thumbs.db
 
+# Local build tools (Maven is downloaded here)
+.tools/
+
 # Generated timetables / reports (rebuild with the CLI)
 output/
 

@@ -110,6 +110,7 @@ def turnout_demo(scale: Literal["small", "medium", "full"], seed: int = 0) -> di
     trained = train(pd.read_csv(folder / "attendance_history.csv"))
     timetable = _run(load_dataset(folder), seed).timetable
     result = forecast(trained, timetable, read("registrations.csv"), read("students.csv"), read("rooms.csv"))
+    result.pop("papers")  # 40k rows; the CLI writes them to turnout_papers.csv instead
     return dict(model=trained.model_name, test_cycle=trained.test_cycle, backtest=trained.backtest,
                 learned_effects=trained.effects, **result)
 

@@ -58,8 +58,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.out:
         args.out.mkdir(parents=True, exist_ok=True)
+        papers = result.pop("papers")
         report = dict(model=trained.model_name, test_cycle=trained.test_cycle, backtest=trained.backtest,
                       learned_effects=trained.effects, **result)
+        with (args.out / "turnout_papers.csv").open("w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=list(papers[0]))
+            w.writeheader()
+            w.writerows(papers)
         (args.out / "turnout_report.json").write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
         with (args.out / "turnout_sessions.csv").open("w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=list(result["sessions"][0]))

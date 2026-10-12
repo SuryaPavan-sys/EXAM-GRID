@@ -268,4 +268,7 @@ def forecast(trained: TrainedTurnout, timetable: list[dict], registrations: list
         invigilator_duties_booked=tot("invigilators_booked"),
         invigilator_duties_saved_pct=pct("invigilators_if_all_attend", "invigilators_booked"),
     )
-    return dict(summary=summary, sessions=sessions, subjects=subj.to_dict(orient="records"))
+    papers = sp[["roll_no", "subject_code", "exam_date", "session", "p"]].rename(columns={"p": "attend_prob"})
+    papers["attend_prob"] = papers["attend_prob"].round(4)
+    return dict(summary=summary, sessions=sessions, subjects=subj.to_dict(orient="records"),
+                papers=papers.to_dict(orient="records"))
