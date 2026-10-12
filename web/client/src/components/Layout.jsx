@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
+import AssistantDock from './AssistantDock.jsx';
 
 const NAV = {
   admin: [['/admin', 'Dashboard'], ['/admin/assistant', 'Plan Assistant'], ['/admin/timetable', 'Timetable'], ['/admin/seating', 'Seating'],
@@ -50,7 +51,8 @@ export default function Layout({ children }) {
           <button className="btn-ghost w-full justify-center" onClick={() => { logout(); navigate('/login'); }}>Log out</button>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 p-4 md:p-8">{children}</main>
+      <main className="min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-24">{children}</main>
+      {user.role === 'admin' && <AssistantDock />}
     </div>
   );
 }

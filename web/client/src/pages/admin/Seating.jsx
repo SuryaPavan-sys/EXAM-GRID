@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, fmt, fmtDate, pdfUrl } from '../../api.js';
+import { setScreenContext } from '../../assistantContext.js';
 import { ErrorBox, Loading, PageHeader } from '../../components/Layout.jsx';
 import RoomGrid from '../../components/RoomGrid.jsx';
 
@@ -23,6 +24,10 @@ export default function Seating() {
   useEffect(() => {
     if (!current || !roomId) return;
     api(`/rooms/${current.date}/${current.session}/${roomId}`).then(setGrid);
+  }, [current, roomId]);
+  // Let the assistant know which room/session is on screen ("why is this room half empty?").
+  useEffect(() => {
+    if (current) setScreenContext({ page: 'Seating plan', date: current.date, session: current.session, room_id: roomId });
   }, [current, roomId]);
 
   const move = async (from, to) => {

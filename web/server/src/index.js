@@ -189,7 +189,7 @@ const send = (fn) => async (req, res) => {
   try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: e.message }); }
 };
 api.get('/assistant', admin, send(() => getConversation()));
-api.post('/assistant/message', admin, send((req) => sendMessage(req.body.text, req.user.name)));
+api.post('/assistant/message', admin, send((req) => sendMessage(req.body.text, req.user.name, req.body.context)));
 api.post('/assistant/proposals/:id/apply', admin, send((req) => applyProposal(req.params.id, req.user.name)));
 api.post('/assistant/proposals/:id/reject', admin, send((req) => rejectProposal(req.params.id)));
 api.post('/assistant/undo', admin, send((req) => undo(req.user.name)));

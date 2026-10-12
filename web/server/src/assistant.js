@@ -2,29 +2,61 @@
 // proposes checked changes. Nothing changes until the admin presses Apply, which edits the data,
 // re-runs the whole pipeline and reports what changed.
 //
-// With Claude credentials (ANTHROPIC_API_KEY, e.g. in web/server/.env) it uses Claude with tools.
-// Without them it falls back to a built-in parser for clear commands.
+// Which LLM answers (keys go in web/server/.env):
+//   GEMINI_API_KEY    -> Google Gemini (free tier available)          [preferred when set]
+//   ANTHROPIC_API_KEY -> Claude
+//   neither           -> built-in parser for clear commands
+// ASSISTANT_PROVIDER=gemini|claude|parser forces one when several are configured.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Anthropic from '@anthropic-ai/sdk';
+import { ApiError as GeminiApiError, GoogleGenAI } from '@google/genai';
 import { ACTION_TYPES, applyActions, checkSubjectMove, examDays, lastBackup, snapshot, undoLast, validateAction } from './planChanges.js';
 import { pipelineState, runPipelineAndWait } from './pipeline.js';
 import { store } from './store.js';
 
 const FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../var/assistant.json');
-const MODEL = 'claude-opus-5-5';
+const CLAUDE_MODEL = 'claude-opus-5-5';
+const geminiModel = () => process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 const MAX_TOOL_ROUNDS = 8;
 
-export const llmEnabled = () => Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
+const geminiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+const claudeKey = () => process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN;
+export function provider() {
+  const forced = (process.env.ASSISTANT_PROVIDER || '').toLowerCase();
+  if (forced === 'gemini' && geminiKey()) return 'gemini';
+  if (forced === 'claude' && claudeKey()) return 'claude';
+  if (forced === 'parser') return 'parser';
+  return geminiKey() ? 'gemini' : claudeKey() ? 'claude' : 'parser';
+}
+export const llmEnabled = () => provider() !== 'parser';
+const modelName = () => ({ gemini: geminiModel(), claude: CLAUDE_MODEL, parser: 'built-in parser' }[provider()]);
+
 let client = null;
 const claude = () => (client ??= new Anthropic());
+let geminiClient = null;
+const gemini = () => (geminiClient ??= new GoogleGenAI({ apiKey: geminiKey() }));
+/** Tests swap in a stub client so the tool loop can be checked without a network call. */
+export const _setGeminiClientForTests = (c) => { geminiClient = c; };
 
 // ------------------------------------------------------------------ conversation state
+// history = Claude-format turns, contents = Gemini-format turns. Both are append-only.
 let state = load();
 function load() {
-  try { return JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch { return { history: [], items: [], proposals: {} }; }
+  try {
+    const s = JSON.parse(fs.readFileSync(FILE, 'utf8'));
+    return { contents: [], ...s };
+  } catch { return { history: [], contents: [], items: [], proposals: {} }; }
+}
+
+/** Tell whichever model answers next what happened outside the chat (applies, undos). */
+function note(text) {
+  state.history.push({ role: 'user', content: text });
+  const last = state.contents[state.contents.length - 1];
+  if (last?.role === 'user') last.parts.push({ text });
+  else state.contents.push({ role: 'user', parts: [{ text }] });
 }
 function save() {
   fs.mkdirSync(path.dirname(FILE), { recursive: true });
@@ -38,12 +70,12 @@ function addItem(item) {
 }
 
 export function getConversation() {
-  return { items: state.items, llm: llmEnabled(), model: llmEnabled() ? MODEL : 'built-in parser',
+  return { items: state.items, llm: llmEnabled(), provider: provider(), model: modelName(),
     pipeline: pipelineState(), can_undo: Boolean(lastBackup()) };
 }
 
 export function resetConversation() {
-  state = { history: [], items: [], proposals: {} };
+  state = { history: [], contents: [], items: [], proposals: {} };
   save();
   return getConversation();
 }
@@ -169,7 +201,7 @@ export async function applyProposal(id, by) {
     setProposalStatus(id, 'failed', { error: `${failed?.name} failed - change rolled back` });
     const text = `The re-plan failed at "${failed?.name}", so I rolled the change back.\n\n${(failed?.log || '').trim().split('\n').slice(-6).join('\n')}`;
     addItem({ kind: 'assistant', text });
-    state.history.push({ role: 'user', content: `[Exam cell] Applied ${id}, but the re-plan failed and was rolled back:\n${failed?.log?.slice(-1500) || ''}` });
+    note(`[Exam cell] Applied ${id}, but the re-plan failed and was rolled back:\n${failed?.log?.slice(-1500) || ''}`);
     save();
     return getConversation();
   }
@@ -178,8 +210,8 @@ export async function applyProposal(id, by) {
   setProposalStatus(id, 'applied', { applied_by: by, backup });
   addItem({ kind: 'result', proposal_id: id, rows, ok: after.clashes === 0 && after.neighbours === 0 && after.unseated === 0 && after.own_subject === 0 });
   // Tell the model what happened so later answers build on the new plan (history is append-only).
-  state.history.push({ role: 'user', content: `[Exam cell] ${by} applied ${id}. The whole plan was re-generated. Before -> after:\n`
-    + rows.filter((r) => r.changed || /clash|neighbour|Unseated|own-subject|leave/i.test(r.label)).map((r) => `- ${r.label}: ${r.before} -> ${r.after}`).join('\n') });
+  note(`[Exam cell] ${by} applied ${id}. The whole plan was re-generated. Before -> after:\n`
+    + rows.filter((r) => r.changed || /clash|neighbour|Unseated|own-subject|leave/i.test(r.label)).map((r) => `- ${r.label}: ${r.before} -> ${r.after}`).join('\n'));
   save();
   return getConversation();
 }
@@ -188,7 +220,7 @@ export function rejectProposal(id) {
   const p = state.proposals[id];
   if (!p || p.status !== 'pending') throw Object.assign(new Error('no pending proposal with that id'), { status: 404 });
   setProposalStatus(id, 'rejected');
-  state.history.push({ role: 'user', content: `[Exam cell] Rejected ${id}; do not apply it.` });
+  note(`[Exam cell] Rejected ${id}; do not apply it.`);
   save();
   return getConversation();
 }
@@ -200,7 +232,7 @@ export async function undo(by) {
   const p = Object.values(state.proposals).find((x) => x.status === 'applied' && JSON.stringify(x.actions) === JSON.stringify(last.actions));
   if (p) setProposalStatus(p.id, 'undone');
   addItem({ kind: 'assistant', text: `Undone by ${by}. The data is back to how it was before${p ? ` ${p.id}` : ''}, and the plan was re-generated.` });
-  state.history.push({ role: 'user', content: `[Exam cell] ${by} undid the last applied change${p ? ` (${p.id})` : ''}; the plan was re-generated.` });
+  note(`[Exam cell] ${by} undid the last applied change${p ? ` (${p.id})` : ''}; the plan was re-generated.`);
   save();
   return getConversation();
 }
@@ -247,6 +279,7 @@ How to work:
 - When the admin reports a problem or asks for a change that the actions can express (room unavailable/available, faculty leave, holiday, move or unpin a subject, change the last exam date), call propose_changes. Resolve names to IDs first (find_faculty / find_subject); if a name or subject is ambiguous, ask which one. For a subject move, call check_subject_move first and mention what it will displace.
 - Proposals are applied only when the admin presses Apply; never say a change is done until you are told it was applied. After an apply, the whole plan is re-generated and you will receive the before/after numbers.
 - If a request cannot be expressed with the actions (for example swapping two individual students' seats, or changing a hard rule), say so plainly and point to the right screen (Seating editor, Data & pipeline) or what the developer would need to change.
+- A message may end with a [Screen context: ...] note saying which page, room or session the admin is looking at; use it to resolve "this room", "this session" and similar.
 - Dates the admin gives without a year are in ${c.start_date.slice(0, 4)}. Answer briefly and concretely, in plain language, using short lists where helpful.`;
 }
 
@@ -256,7 +289,7 @@ async function chatWithClaude(text) {
     let response;
     try {
       response = await claude().beta.messages.create({
-        model: MODEL,
+        model: CLAUDE_MODEL,
         max_tokens: 16000,
         betas: ['server-side-fallback-2026-07-01'],
         fallbacks: 'default',
@@ -291,25 +324,81 @@ async function chatWithClaude(text) {
 
     const results = [];
     for (const call of calls) {
-      let result;
-      try {
-        if (call.name === 'propose_changes') {
-          const actions = (call.input.actions || []).map((a) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== null)));
-          result = propose(call.input.summary, actions);
-          addItem({ kind: 'activity', text: result.proposal ? `Proposed ${result.proposal}` : 'Proposal needed fixing' });
-        } else if (lookups[call.name]) {
-          result = lookups[call.name](call.input);
-          addItem({ kind: 'activity', text: activityLabel(call.name, call.input) });
-        } else {
-          result = { error: `unknown tool ${call.name}` };
-        }
-      } catch (e) {
-        result = { error: e.message };
-      }
+      const result = runTool(call.name, call.input);
       results.push({ type: 'tool_result', tool_use_id: call.id, content: JSON.stringify(result).slice(0, 20000),
         ...(result?.error || result?.errors ? { is_error: true } : {}) });
     }
     state.history.push({ role: 'user', content: results });
+    save();
+  }
+  addItem({ kind: 'error', text: 'Stopped after too many lookups - please ask a narrower question.' });
+}
+
+/** Run one tool call from either model; lookups answer directly, propose_changes only proposes. */
+function runTool(name, input = {}) {
+  try {
+    if (name === 'propose_changes') {
+      const actions = (input.actions || []).map((a) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== null && v !== undefined)));
+      const result = propose(input.summary || 'Change request', actions);
+      addItem({ kind: 'activity', text: result.proposal ? `Proposed ${result.proposal}` : 'Proposal needed fixing' });
+      return result;
+    }
+    if (lookups[name]) {
+      addItem({ kind: 'activity', text: activityLabel(name, input) });
+      return lookups[name](input);
+    }
+    return { error: `unknown tool ${name}` };
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+// ------------------------------------------------------------------ Gemini mode
+const GEMINI_TOOLS = [{
+  functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parametersJsonSchema: t.input_schema })),
+}];
+
+async function chatWithGemini(text) {
+  state.contents.push({ role: 'user', parts: [{ text }] });
+  for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+    let response;
+    try {
+      response = await gemini().models.generateContent({
+        model: geminiModel(),
+        contents: state.contents,
+        config: { systemInstruction: systemPrompt(), tools: GEMINI_TOOLS },
+      });
+    } catch (e) {
+      if (round === 0) state.contents.pop();  // keep the history valid for the next try
+      const status = e instanceof GeminiApiError ? e.status : null;
+      const hint = status === 429 ? ' The free-tier limit was reached - wait a minute (or for tomorrow\'s quota) and try again.'
+        : status === 400 || status === 403 ? ' Check GEMINI_API_KEY and GEMINI_MODEL in web/server/.env.' : '';
+      addItem({ kind: 'error', text: `Gemini request failed${status ? ` (${status})` : ''}: ${e.message}.${hint}` });
+      return;
+    }
+    const content = response.candidates?.[0]?.content;
+    if (!content?.parts?.length) {
+      if (round === 0) state.contents.pop();
+      const why = response.promptFeedback?.blockReason || response.candidates?.[0]?.finishReason || 'no answer';
+      addItem({ kind: 'error', text: `Gemini did not answer (${why}). Try rephrasing.` });
+      return;
+    }
+    // Append the model turn exactly as received - it carries the thought signatures
+    // Gemini needs to continue a function-calling conversation.
+    state.contents.push(content);
+    const said = content.parts.filter((p) => p.text && !p.thought).map((p) => p.text).join('\n').trim();
+    const calls = response.functionCalls || [];
+    if (said) addItem({ kind: 'assistant', text: said });
+    if (!calls.length) {
+      if (response.candidates?.[0]?.finishReason === 'MAX_TOKENS') addItem({ kind: 'error', text: 'The reply was cut off (too long).' });
+      return;
+    }
+    const parts = calls.map((call) => {
+      const result = runTool(call.name, call.args);
+      return { functionResponse: { ...(call.id ? { id: call.id } : {}), name: call.name,
+        response: result?.error || result?.errors ? { error: result } : { output: result } } };
+    });
+    state.contents.push({ role: 'user', parts });
     save();
   }
   addItem({ kind: 'error', text: 'Stopped after too many lookups - please ask a narrower question.' });
@@ -419,20 +508,37 @@ function chatWithParser(text) {
 - "Extend the last exam date to 12 Dec"
 
 Right now: ${o.timetable.days_used} exam days (${o.timetable.first} to ${o.timetable.last}), ${o.timetable.clashes} clashes, ${o.seating.same_subject_neighbours} same-paper neighbours.
-To chat in free-form language (questions, names, "can't come Tuesday"), add a Claude API key - see the note at the top.` });
+To ask questions in any wording, add a free Gemini API key (or a Claude key) - see the note at the top.` });
 }
 
 // ------------------------------------------------------------------ entry point
+/** "the admin is on the Seating page looking at CS-204 on 2026-11-16 FN" - so "this room" makes sense. */
+function describeContext(ctx) {
+  if (!ctx || typeof ctx !== 'object') return '';
+  const clean = (v) => String(v ?? '').replace(/[^\w\s:./-]/g, '').slice(0, 60);
+  const bits = [];
+  if (ctx.page) bits.push(`is on the "${clean(ctx.page)}" page`);
+  if (ctx.room_id) bits.push(`looking at room ${clean(ctx.room_id)}`);
+  if (ctx.date) bits.push(`for ${clean(ctx.date)} ${clean(ctx.session)}`.trim());
+  return bits.length ? `\n\n[Screen context: the admin ${bits.join(', ')}.]` : '';
+}
+
 let busy = false;
-export async function sendMessage(text, by) {
+export async function sendMessage(text, by, context = null) {
   text = String(text || '').trim().slice(0, 4000);
   if (!text) throw Object.assign(new Error('message is empty'), { status: 400 });
   if (busy) throw Object.assign(new Error('the assistant is still answering - wait a moment'), { status: 409 });
   busy = true;
   try {
     addItem({ kind: 'user', text, by });
-    if (llmEnabled()) await chatWithClaude(`${text}`);
-    else chatWithParser(text);
+    const which = provider();
+    if (which === 'gemini') await chatWithGemini(text + describeContext(context));
+    else if (which === 'claude') await chatWithClaude(text + describeContext(context));
+    else {
+      // The parser has no idea what "this room" is, so fill in the room on screen.
+      const room = context?.room_id && /\b[A-Z]{2}-\d{3}\b/i.test(text) === false ? String(context.room_id) : null;
+      chatWithParser(room ? text.replace(/\b(this|the current|that) room\b/i, `room ${room}`) : text);
+    }
   } finally {
     busy = false;
     save();
