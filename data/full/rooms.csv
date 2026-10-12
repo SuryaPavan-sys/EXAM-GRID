@@ -1,0 +1,108 @@
+room_id,block,floor,rows,cols,capacity,room_type,is_ground_floor,exam_usable
+MB-001,Main Block,0,10,6,60,SEMINAR_HALL,yes,yes
+MB-002,Main Block,0,6,6,36,CLASSROOM,yes,yes
+MB-003,Main Block,0,6,6,36,CLASSROOM,yes,yes
+MB-004,Main Block,0,6,6,36,CLASSROOM,yes,yes
+MB-005,Main Block,0,7,6,42,CLASSROOM,yes,yes
+MB-101,Main Block,1,7,6,42,CLASSROOM,no,yes
+MB-102,Main Block,1,8,6,48,CLASSROOM,no,yes
+MB-103,Main Block,1,8,6,48,CLASSROOM,no,yes
+MB-104,Main Block,1,8,6,48,CLASSROOM,no,yes
+MB-105,Main Block,1,8,6,48,CLASSROOM,no,yes
+MB-201,Main Block,2,7,6,42,CLASSROOM,no,yes
+MB-202,Main Block,2,7,6,42,CLASSROOM,no,yes
+MB-203,Main Block,2,8,6,48,CLASSROOM,no,yes
+MB-204,Main Block,2,8,6,48,CLASSROOM,no,yes
+MB-205,Main Block,2,6,6,36,CLASSROOM,no,yes
+MB-301,Main Block,3,8,6,48,CLASSROOM,no,yes
+MB-302,Main Block,3,6,6,36,CLASSROOM,no,yes
+MB-303,Main Block,3,6,6,36,CLASSROOM,no,yes
+MB-304,Main Block,3,6,6,36,CLASSROOM,no,yes
+MB-305,Main Block,3,7,6,42,CLASSROOM,no,yes
+CS-001,CSE Block,0,10,6,60,SEMINAR_HALL,yes,yes
+CS-002,CSE Block,0,8,6,48,CLASSROOM,yes,yes
+CS-003,CSE Block,0,7,6,42,CLASSROOM,yes,yes
+CS-004,CSE Block,0,7,6,42,CLASSROOM,yes,yes
+CS-005,CSE Block,0,6,6,36,CLASSROOM,yes,yes
+CS-101,CSE Block,1,8,6,48,CLASSROOM,no,yes
+CS-102,CSE Block,1,6,6,36,CLASSROOM,no,yes
+CS-103,CSE Block,1,7,6,42,CLASSROOM,no,yes
+CS-104,CSE Block,1,7,6,42,CLASSROOM,no,yes
+CS-105,CSE Block,1,6,6,36,CLASSROOM,no,yes
+CS-201,CSE Block,2,6,6,36,CLASSROOM,no,yes
+CS-202,CSE Block,2,8,6,48,CLASSROOM,no,yes
+CS-203,CSE Block,2,7,6,42,CLASSROOM,no,yes
+CS-204,CSE Block,2,6,6,36,CLASSROOM,no,yes
+CS-205,CSE Block,2,8,6,48,CLASSROOM,no,yes
+CS-301,CSE Block,3,8,6,48,CLASSROOM,no,yes
+CS-302,CSE Block,3,7,6,42,CLASSROOM,no,yes
+CS-303,CSE Block,3,8,6,48,CLASSROOM,no,yes
+CS-304,CSE Block,3,6,6,36,CLASSROOM,no,yes
+CS-305,CSE Block,3,6,6,36,CLASSROOM,no,yes
+AI-001,AI & DS Block,0,10,6,60,SEMINAR_HALL,yes,yes
+AI-002,AI & DS Block,0,8,6,48,CLASSROOM,yes,yes
+AI-003,AI & DS Block,0,7,6,42,CLASSROOM,yes,no
+AI-004,AI & DS Block,0,8,6,48,CLASSROOM,yes,yes
+AI-005,AI & DS Block,0,7,6,42,CLASSROOM,yes,yes
+AI-101,AI & DS Block,1,8,6,48,CLASSROOM,no,yes
+AI-102,AI & DS Block,1,7,6,42,CLASSROOM,no,yes
+AI-103,AI & DS Block,1,6,6,36,CLASSROOM,no,yes
+AI-104,AI & DS Block,1,6,6,36,CLASSROOM,no,yes
+AI-105,AI & DS Block,1,6,6,36,CLASSROOM,no,yes
+AI-201,AI & DS Block,2,8,6,48,CLASSROOM,no,yes
+AI-202,AI & DS Block,2,7,6,42,CLASSROOM,no,yes
+AI-203,AI & DS Block,2,8,6,48,CLASSROOM,no,yes
+AI-204,AI & DS Block,2,6,6,36,CLASSROOM,no,yes
+AI-205,AI & DS Block,2,6,6,36,CLASSROOM,no,yes
+AI-301,AI & DS Block,3,8,6,48,CLASSROOM,no,yes
+AI-302,AI & DS Block,3,8,6,48,CLASSROOM,no,yes
+AI-303,AI & DS Block,3,8,6,48,CLASSROOM,no,yes
+AI-304,AI & DS Block,3,7,6,42,CLASSROOM,no,yes
+AI-305,AI & DS Block,3,8,6,48,CLASSROOM,no,yes
+IT-001,IT Block,0,10,6,60,SEMINAR_HALL,yes,yes
+IT-002,IT Block,0,8,6,48,CLASSROOM,yes,yes
+IT-003,IT Block,0,8,6,48,CLASSROOM,yes,yes
+IT-004,IT Block,0,7,6,42,CLASSROOM,yes,yes
+IT-005,IT Block,0,8,6,48,CLASSROOM,yes,yes
+IT-101,IT Block,1,6,6,36,CLASSROOM,no,no
+IT-102,IT Block,1,8,6,48,CLASSROOM,no,yes
+IT-103,IT Block,1,7,6,42,CLASSROOM,no,yes
+IT-104,IT Block,1,6,6,36,CLASSROOM,no,yes
+IT-105,IT Block,1,7,6,42,CLASSROOM,no,yes
+IT-201,IT Block,2,7,6,42,CLASSROOM,no,yes
+IT-202,IT Block,2,8,6,48,CLASSROOM,no,yes
+IT-203,IT Block,2,8,6,48,CLASSROOM,no,yes
+IT-204,IT Block,2,6,6,36,CLASSROOM,no,yes
+IT-205,IT Block,2,7,6,42,CLASSROOM,no,yes
+IT-301,IT Block,3,8,6,48,CLASSROOM,no,yes
+IT-302,IT Block,3,7,6,42,CLASSROOM,no,yes
+IT-303,IT Block,3,8,6,48,CLASSROOM,no,yes
+IT-304,IT Block,3,7,6,42,CLASSROOM,no,yes
+IT-305,IT Block,3,8,6,48,CLASSROOM,no,yes
+EC-001,ECE Block,0,10,6,60,SEMINAR_HALL,yes,yes
+EC-002,ECE Block,0,7,6,42,CLASSROOM,yes,yes
+EC-003,ECE Block,0,8,6,48,CLASSROOM,yes,yes
+EC-004,ECE Block,0,8,6,48,CLASSROOM,yes,yes
+EC-005,ECE Block,0,7,6,42,CLASSROOM,yes,yes
+EC-101,ECE Block,1,7,6,42,CLASSROOM,no,yes
+EC-102,ECE Block,1,8,6,48,CLASSROOM,no,yes
+EC-103,ECE Block,1,7,6,42,CLASSROOM,no,yes
+EC-104,ECE Block,1,6,6,36,CLASSROOM,no,yes
+EC-105,ECE Block,1,7,6,42,CLASSROOM,no,yes
+EC-201,ECE Block,2,7,6,42,CLASSROOM,no,yes
+EC-202,ECE Block,2,7,6,42,CLASSROOM,no,no
+EC-203,ECE Block,2,7,6,42,CLASSROOM,no,yes
+EC-204,ECE Block,2,6,6,36,CLASSROOM,no,no
+EC-205,ECE Block,2,8,6,48,CLASSROOM,no,yes
+EC-301,ECE Block,3,7,6,42,CLASSROOM,no,yes
+EC-302,ECE Block,3,6,6,36,CLASSROOM,no,yes
+EC-303,ECE Block,3,7,6,42,CLASSROOM,no,yes
+EC-304,ECE Block,3,7,6,42,CLASSROOM,no,yes
+EC-305,ECE Block,3,7,6,42,CLASSROOM,no,no
+EE-001,EEE Block,0,10,6,60,SEMINAR_HALL,yes,yes
+EE-002,EEE Block,0,8,6,48,CLASSROOM,yes,yes
+EE-003,EEE Block,0,6,6,36,CLASSROOM,yes,yes
+EE-004,EEE Block,0,6,6,36,CLASSROOM,yes,yes
+EE-005,EEE Block,0,8,6,48,CLASSROOM,yes,yes
+EE-101,EEE Block,1,7,6,42,CLASSROOM,no,yes
+EE-102,EEE Block,1,6,6,36,CLASSROOM,no,yes

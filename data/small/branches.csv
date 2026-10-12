@@ -1,0 +1,13 @@
+branch,branch_name,roll_code,roll_code_status,intake_2026
+CSE,Computer Science & Engineering,05,confirmed (SRKR result lists),360
+AIDS,Artificial Intelligence & Data Science,54,confirmed (SRKR result lists),240
+AIML,Artificial Intelligence & Machine Learning,61,ASSUMED - please confirm,240
+IT,Information Technology,12,confirmed (SRKR result lists),180
+ECE,Electronics & Communication Engineering,04,confirmed (SRKR result lists),180
+CSIT,Computer Science & Information Technology,59,ASSUMED - please confirm,120
+EEE,Electrical & Electronics Engineering,02,confirmed (SRKR result lists),120
+CIVIL,Civil Engineering,01,confirmed (SRKR result lists),120
+MECH,Mechanical Engineering,03,confirmed (SRKR result lists),120
+CSBS,Computer Science & Business Systems,57,confirmed (SRKR result lists),60
+CSD,Computer Science & Design,44,ASSUMED - please confirm,60
+CIC,CSE (IoT & Cyber Security incl. Blockchain Technology),49,ASSUMED - please confirm,60

@@ -1,0 +1,68 @@
+faculty_id,date,session,reason
+SRKR0031,2026-11-30,BOTH,Conference
+SRKR0042,2026-11-25,BOTH,Medical leave
+SRKR0042,2026-11-27,FN,Medical leave
+SRKR0042,2026-11-30,AN,Medical leave
+SRKR0062,2026-11-17,FN,Personal leave
+SRKR0062,2026-11-21,FN,Personal leave
+SRKR0063,2026-11-28,AN,Conference
+SRKR0063,2026-12-03,AN,Conference
+SRKR0066,2026-11-16,FN,Conference
+SRKR0068,2026-11-19,BOTH,Conference
+SRKR0068,2026-11-21,AN,Conference
+SRKR0068,2026-11-26,FN,Conference
+SRKR0078,2026-12-03,AN,Medical leave
+SRKR0157,2026-11-17,BOTH,Personal leave
+SRKR0157,2026-11-28,BOTH,Medical leave
+SRKR0173,2026-12-07,AN,External examiner duty
+SRKR0175,2026-11-18,AN,Medical leave
+SRKR0175,2026-11-20,FN,Conference
+SRKR0175,2026-11-30,FN,Medical leave
+SRKR0176,2026-12-03,BOTH,Medical leave
+SRKR0176,2026-12-05,BOTH,Conference
+SRKR0188,2026-11-23,BOTH,Conference
+SRKR0188,2026-12-04,AN,Conference
+SRKR0188,2026-12-07,BOTH,Conference
+SRKR0218,2026-11-19,FN,Personal leave
+SRKR0218,2026-11-26,AN,Medical leave
+SRKR0218,2026-12-02,AN,Conference
+SRKR0230,2026-11-18,FN,Personal leave
+SRKR0230,2026-12-03,FN,Conference
+SRKR0230,2026-12-05,AN,External examiner duty
+SRKR0235,2026-12-05,BOTH,Conference
+SRKR0237,2026-12-07,BOTH,Personal leave
+SRKR0238,2026-11-23,AN,Personal leave
+SRKR0258,2026-11-18,BOTH,Personal leave
+SRKR0258,2026-11-30,AN,Medical leave
+SRKR0259,2026-12-01,FN,Medical leave
+SRKR0264,2026-11-23,AN,Medical leave
+SRKR0264,2026-11-26,AN,Conference
+SRKR0265,2026-11-18,FN,Personal leave
+SRKR0265,2026-11-30,AN,Personal leave
+SRKR0265,2026-12-02,FN,Personal leave
+SRKR0275,2026-11-20,AN,Personal leave
+SRKR0275,2026-11-26,AN,Conference
+SRKR0279,2026-11-26,FN,External examiner duty
+SRKR0281,2026-11-17,FN,Medical leave
+SRKR0281,2026-11-26,BOTH,External examiner duty
+SRKR0281,2026-12-01,BOTH,Personal leave
+SRKR0287,2026-11-19,AN,Medical leave
+SRKR0287,2026-11-21,BOTH,External examiner duty
+SRKR0287,2026-12-02,AN,Conference
+SRKR0292,2026-11-19,AN,Medical leave
+SRKR0316,2026-12-02,FN,Medical leave
+SRKR0330,2026-11-18,FN,Medical leave
+SRKR0330,2026-11-19,FN,Medical leave
+SRKR0330,2026-12-04,BOTH,External examiner duty
+SRKR0345,2026-11-16,FN,External examiner duty
+SRKR0345,2026-11-26,AN,Personal leave
+SRKR0398,2026-11-27,BOTH,Conference
+SRKR0398,2026-12-03,AN,External examiner duty
+SRKR0431,2026-12-03,AN,Conference
+SRKR0445,2026-11-20,BOTH,Conference
+SRKR0445,2026-12-07,BOTH,Conference
+SRKR0447,2026-11-16,BOTH,Medical leave
+SRKR0447,2026-12-05,FN,Conference
+SRKR0460,2026-12-04,BOTH,Medical leave
+SRKR0463,2026-11-16,FN,Medical leave
+SRKR0463,2026-11-18,FN,Personal leave

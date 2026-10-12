@@ -1,0 +1,274 @@
+subject_code,subject_name,department,year,semester,category,elective_slot,credits,cie_marks,see_marks,duration_min,offered_to
+B23BS1101,Linear Algebra & Calculus,BSH,1,1,BS,,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23BS1102,Engineering Physics,BSH,1,1,BS,,3,30,70,180,CSE;CSIT;ECE;EEE;IT
+B23BS1103,Chemistry,BSH,1,1,BS,,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD
+B23BS1106,Engineering Chemistry,BSH,1,1,BS,,3,30,70,180,CIVIL;MECH
+B23CE1101,Basic Civil & Mechanical Engineering,CIVIL,1,1,ES,,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;MECH
+B23CS1101,Introduction to Programming,CSE,1,1,ES,,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD;CSE;CSIT;IT
+B23EE1101,Basic Electrical and Electronics Engineering,EEE,1,1,ES,,3,30,70,180,CSE;CSIT;ECE;EEE;IT
+B23HS1101,Communicative English,BSH,1,1,HS,,2,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23ME1101,Engineering Graphics,MECH,1,1,ES,,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23BS2101,Discrete Mathematics and Graph Theory,BSH,2,1,BS,,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD;CSE;CSIT;IT
+B23BS2102,Numerical Methods and Complex Variables,BSH,2,1,BS,,3,30,70,180,EEE
+B23BS2103,Numerical Methods & Transform Techniques,BSH,2,1,BS,,3,30,70,180,MECH
+B23BS2104,Numerical Techniques and Statistical Methods,BSH,2,1,BS,,3,30,70,180,CIVIL
+B23BS2105,Probability theory and stochastic process,BSH,2,1,BS,,3,30,70,180,ECE
+B23AD2101,Advanced Data Structures & Algorithm Analysis,AIDS,2,1,PC,,3,30,70,180,AIDS
+B23AM2101,Artificial Intelligence,AIML,2,1,PC,,3,30,70,180,AIML
+B23CE2101,Surveying,CIVIL,2,1,PC,,3,30,70,180,CIVIL
+B23CE2102,Strength of Materials,CIVIL,2,1,PC,,3,30,70,180,CIVIL
+B23CE2103,Fluid Mechanics,CIVIL,2,1,PC,,3,30,70,180,CIVIL
+B23CI2101,Advanced Data Structures & Algorithm Analysis,CIC,2,1,PC,,3,30,70,180,CIC
+B23CS2101,Digital Logic & Computer Organization,CSE,2,1,PC,,3,30,70,180,CIC;CSD;CSE;CSIT
+B23CS2102,Database Management Systems,CSE,2,1,PC,,3,30,70,180,AIML;CSD;CSE;CSIT
+B23CS2103,Object Oriented Programing through Java,CSE,2,1,PC,,3,30,70,180,AIML;CIC;CSD;CSE;CSIT
+B23EC2101,Signals and Systems,ECE,2,1,PC,,3,30,70,180,ECE
+B23EC2102,Electronic Devices and Circuits,ECE,2,1,PC,,3,30,70,180,ECE
+B23EC2103,Switching Theory& Logic Design,ECE,2,1,PC,,3,30,70,180,ECE
+B23EE2101,Electrical Circuit Analysis - II,EEE,2,1,PC,,3,30,70,180,EEE
+B23EE2102,DC Machines & Transformers,EEE,2,1,PC,,3,30,70,180,EEE
+B23EE2103,Analog Electronic Circuits,EEE,2,1,PC,,3,30,70,180,EEE
+B23HS2101,Universal Human Values -II : Understanding Harmony and Ethical Human Conduct,BSH,2,1,HS,,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23IT2101,Database Management Systems,IT,2,1,PC,,3,30,70,180,AIDS;CSBS;IT
+B23IT2102,Object Oriented Programing through Java,IT,2,1,PC,,3,30,70,180,AIDS;CSBS;IT
+B23IT2103,Computer Organization,IT,2,1,ES,,3,30,70,180,CSBS;IT
+B23ME2101,Thermodynamics,MECH,2,1,PC,,3,30,70,180,MECH
+B23ME2102,Mechanics of Solids,MECH,2,1,PC,,3,30,70,180,MECH
+B23ME2103,Material Science and Metallurgy,MECH,2,1,PC,,3,30,70,180,MECH
+B23AD3101,Fundamentals of Data Mining,AIDS,3,1,PC,,3,30,70,180,AIDS
+B23AD3102,Principles of Machine Learning,AIDS,3,1,PC,,3,30,70,180,AIDS
+B23AD3103,Operating Systems,AIDS,3,1,PC,,3,30,70,180,AIDS
+B23AD3104,Object Oriented Analysis Design,AIDS,3,1,PE,PE-I,3,30,70,180,AIDS
+B23AD3105,Soft computing,AIDS,3,1,PE,PE-I,3,30,70,180,AIDS
+B23AD3106,Internet of Things,AIDS,3,1,PE,PE-I,3,30,70,180,AIDS
+B23AD3107,Exploratory Data Analysis with Python,AIDS,3,1,PE,PE-I,3,30,70,180,AIDS
+B23AD3108,Computer Networks,AIDS,3,1,PE,PE-I,3,30,70,180,AIDS
+B23ADOE01,Java Programming,AIDS,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23ADOE02,Computer Organization And Architecture,AIDS,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AM3101,Deep Learning,AIML,3,1,PC,,3,30,70,180,AIML
+B23AM3102,Computer Networks,AIML,3,1,PC,,3,30,70,180,AIML
+B23AM3103,Natural Language Processing,AIML,3,1,PC,,3,30,70,180,AIML
+B23AM3104,Automata Theory & Compiler Design,AIML,3,1,PE,PE-I,3,30,70,180,AIML
+B23AM3105,NoSQL databases,AIML,3,1,PE,PE-I,3,30,70,180,AIML
+B23AM3106,Exploratory Data Analysis,AIML,3,1,PE,PE-I,3,30,70,180,AIML
+B23AM3107,Object Oriented Analysis and Design,AIML,3,1,PE,PE-I,3,30,70,180,AIML
+B23AM3108,Internet of Things (IoT),AIML,3,1,PE,PE-I,3,30,70,180,AIML
+B23AMOE01,Operating Systems,AIML,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AMOE02,Computer Organization And Architecture,AIML,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AMOE03,Artificial Intelligence Tools & Techniques,AIML,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23BSOE01,Mathematics For Machine Learning,BSH,3,1,OE,OE-I,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23CB3101,Data Analytics,CSBS,3,1,PC,,3,30,70,180,CSBS
+B23CB3102,Computer Networks,CSBS,3,1,PC,,3,30,70,180,CSBS
+B23CB3103,Business Intelligence,CSBS,3,1,PC,,3,30,70,180,CSBS
+B23CB3105,Software Testing Methodologies,CSBS,3,1,PE,PE-I,3,30,70,180,CSBS
+B23CB3106,Artificial Intelligence,CSBS,3,1,PE,PE-I,3,30,70,180,CSBS
+B23CB3107,Automata Theory and Compiler Design,CSBS,3,1,PE,PE-I,3,30,70,180,CSBS
+B23CBOE01,Database Management Systems,CSBS,3,1,OE,OE-I,3,30,70,180,CIVIL;MECH
+B23CBOE02,Python Programming,CSBS,3,1,OE,OE-I,3,30,70,180,CIVIL
+B23CD3101,Visual Design and Communication,CSD,3,1,PC,,3,30,70,180,CSD
+B23CD3102,Computer Networks,CSD,3,1,PC,,3,30,70,180,CSD;CSIT
+B23CD3103,Data Mining and Data Warehousing,CSD,3,1,PC,,3,30,70,180,CSD;CSIT
+B23CD3104,Software Engineering,CSD,3,1,PE,PE-I,3,30,70,180,CSD
+B23CD3105,Cyber Security,CSD,3,1,PE,PE-I,3,30,70,180,CSD
+B23CD3106,Internet of Things,CSD,3,1,PE,PE-I,3,30,70,180,CSD
+B23CE3101,Design and Drawing of Reinforced Concrete Structures,CIVIL,3,1,PC,,3,30,70,180,CIVIL
+B23CE3102,Engineering Hydrology,CIVIL,3,1,PC,,3,30,70,180,CIVIL
+B23CE3103,Geotechnical Engineering-I,CIVIL,3,1,PC,,3,30,70,180,CIVIL
+B23CE3104,Repair and rehabilitation of Structures,CIVIL,3,1,PE,PE-I,3,30,70,180,CIVIL
+B23CE3105,Architecture and Town Planning,CIVIL,3,1,PE,PE-I,3,30,70,180,CIVIL
+B23CE3106,Climate change impact on ecosystem,CIVIL,3,1,PE,PE-I,3,30,70,180,CIVIL
+B23CE3107,Advanced Surveying,CIVIL,3,1,PE,PE-I,3,30,70,180,CIVIL
+B23CEOE01,Remote Sensing And Gis,CIVIL,3,1,OE,OE-I,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23CEOE02,Intelligent Transportation System,CIVIL,3,1,OE,OE-I,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23CI3101,Designing the IoT,CIC,3,1,PC,,3,30,70,180,CIC
+B23CI3102,Cyber Security and Digital Forensics,CIC,3,1,PC,,3,30,70,180,CIC
+B23CI3103,Cryptography & Network Security,CIC,3,1,PC,,3,30,70,180,CIC
+B23CI3104,Automata Theory & Compiler Design,CIC,3,1,PE,PE-I,3,30,70,180,CIC
+B23CI3105,Artificial Intelligence,CIC,3,1,PE,PE-I,3,30,70,180,CIC
+B23CI3106,Microprocessors & Microcontrollers,CIC,3,1,PE,PE-I,3,30,70,180,CIC
+B23CI3107,Lightweight Cryptography,CIC,3,1,PE,PE-I,3,30,70,180,CIC
+B23CIOE01,Java Programming,CIC,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CIOE02,Introduction To Internet Of Things,CIC,3,1,OE,OE-I,3,30,70,180,CIVIL;EEE;MECH
+B23CS3101,Data Warehousing and Data Mining,CSE,3,1,PC,,3,30,70,180,CSE
+B23CS3102,Computer Networks,CSE,3,1,PC,,3,30,70,180,CSE
+B23CS3103,Formal Languages and Automata Theory,CSE,3,1,PC,,3,30,70,180,CSE
+B23CS3104,Object Oriented Analysis and Design,CSE,3,1,PE,PE-I,3,30,70,180,CSE
+B23CS3105,Artificial Intelligence,CSE,3,1,PE,PE-I,3,30,70,180,CSE
+B23CS3106,Microprocessors & Microcontrollers,CSE,3,1,PE,PE-I,3,30,70,180,CSE
+B23CS3107,Software Testing Methodologies,CSE,3,1,PE,PE-I,3,30,70,180,CSE
+B23CSOE01,Computer Organization And Architecture,CSE,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CSOE02,Principles Of Operating Systems,CSE,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CT3101,Internet of Things,CSIT,3,1,PC,,3,30,70,180,CSIT
+B23CT3102,Visual Design and Communication,CSIT,3,1,PE,PE-I,3,30,70,180,CSIT
+B23CT3103,Mobile Computing,CSIT,3,1,PE,PE-I,3,30,70,180,CSIT
+B23CT3104,No SQL,CSIT,3,1,PE,PE-I,3,30,70,180,CSIT
+B23EC3101,Analog & Digital IC Applications,ECE,3,1,PC,,3,30,70,180,ECE
+B23EC3102,Antennas and Wave Propagation,ECE,3,1,PC,,3,30,70,180,ECE
+B23EC3103,Digital Communications,ECE,3,1,PC,,3,30,70,180,ECE
+B23EC3104,CMOS Digital Integrated Circuits Analysis & Design,ECE,3,1,PE,PE-I,3,30,70,180,ECE
+B23EC3105,Electronic Measurements & Instrumentation,ECE,3,1,PE,PE-I,3,30,70,180,ECE
+B23EC3106,Biomedical Instrumentation,ECE,3,1,PE,PE-I,3,30,70,180,ECE
+B23EC3107,Digital System Design,ECE,3,1,PE,PE-I,3,30,70,180,ECE
+B23EC3108,Artificial Intelligence,ECE,3,1,PE,PE-I,3,30,70,180,ECE
+B23ECOE01,Electronic Devices And Circuits,ECE,3,1,OE,OE-I,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;IT;MECH
+B23EE3101,Signals & Systems,EEE,3,1,PC,,3,30,70,180,EEE
+B23EE3102,Transmission and Distribution Systems,EEE,3,1,PC,,3,30,70,180,EEE
+B23EE3103,Power Electronics,EEE,3,1,PC,,3,30,70,180,EEE
+B23EE3105,Energy Storage Systems,EEE,3,1,PE,PE-I,3,30,70,180,EEE
+B23EE3106,Distributed Generation & Micro grids,EEE,3,1,PE,PE-I,3,30,70,180,EEE
+B23EEOE01,Renewable Energy Sources,EEE,3,1,OE,OE-I,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;IT
+B23EEOE02,Principles Of Control Systems,EEE,3,1,OE,OE-I,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;IT
+B23IT3101,Advanced Java,IT,3,1,PC,,3,30,70,180,IT
+B23IT3102,Computer Networks,IT,3,1,PC,,3,30,70,180,IT
+B23IT3103,Automata Theory & Compiler Design,IT,3,1,PC,,3,30,70,180,IT
+B23IT3104,Object Oriented Analysis and Design,IT,3,1,PE,PE-I,3,30,70,180,IT
+B23IT3105,Cyber Security,IT,3,1,PE,PE-I,3,30,70,180,IT
+B23IT3106,Artificial Intelligence,IT,3,1,PE,PE-I,3,30,70,180,IT
+B23IT3107,Microprocessors & Microcontrollers,IT,3,1,PE,PE-I,3,30,70,180,IT
+B23IT3108,Data Warehousing & Data Mining,IT,3,1,PE,PE-I,3,30,70,180,IT
+B23ITOE01,Object Oriented Programming Through Java,IT,3,1,OE,OE-I,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23ME3101,Machine Tools & Metrology,MECH,3,1,PC,,3,30,70,180,MECH
+B23ME3102,Fluid Mechanics & Hydraulic Machines,MECH,3,1,PC,,3,30,70,180,MECH
+B23ME3103,Design of Machine Elements,MECH,3,1,PC,,3,30,70,180,MECH
+B23ME3104,Operations Research,MECH,3,1,HS,,2,30,70,180,MECH
+B23ME3105,Mechanical Vibrations,MECH,3,1,PE,PE-I,3,30,70,180,MECH
+B23ME3106,Robotics,MECH,3,1,PE,PE-I,3,30,70,180,MECH
+B23ME3107,Additive Manufacturing,MECH,3,1,PE,PE-I,3,30,70,180,MECH
+B23ME3108,Sensors and Instrumentation,MECH,3,1,PE,PE-I,3,30,70,180,MECH
+B23MEOE01,Applied Operations Research,MECH,3,1,OE,OE-I,3,30,70,180,AIDS;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE
+B23MEOE02,Sustainable Energy Technologies,MECH,3,1,OE,OE-I,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT
+B23AD4101,Generative AI Techniques,AIDS,4,1,PC,,3,30,70,180,AIDS
+B23AD4102,DevOps,AIDS,4,1,PE,PE-IV,3,30,70,180,AIDS;CSIT
+B23AD4103,Architecture for Management of Large Datasets,AIDS,4,1,PE,PE-IV,3,30,70,180,AIDS
+B23AD4104,Any of the12-Week SWAYAM/NPTEL Course recommended by the BoS,AIDS,4,1,PE,PE-IV,3,30,70,180,AIDS
+B23AD4105,Robotic Process Automation,AIDS,4,1,PE,PE-V,3,30,70,180,AIDS
+B23AD4106,Reinforcement Learning,AIDS,4,1,PE,PE-V,3,30,70,180,AIDS
+B23AD4107,Any of the12-Week SWAYAM/NPTEL Course recommended by the BoS,AIDS,4,1,PE,PE-V,3,30,70,180,AIDS
+B23ADOE05,Principles Of Artificial Intelligence,AIDS,4,1,OE,OE-III,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23ADOE06,Principles Of Internet Of Things,AIDS,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AM4101,Generative AI,AIML,4,1,PC,,3,30,70,180,AIML
+B23AM4102,Quantum Computing,AIML,4,1,PE,PE-IV,3,30,70,180,AIML
+B23AM4103,Cloud Computing,AIML,4,1,PE,PE-IV,3,30,70,180,AIML
+B23AM4104,Software Project Management,AIML,4,1,PE,PE-IV,3,30,70,180,AIML
+B23AM4106,High Performance Computing,AIML,4,1,PE,PE-V,3,30,70,180,AIDS;AIML
+B23AM4107,Explainable AI,AIML,4,1,PE,PE-V,3,30,70,180,AIML
+B23AM4108,Agentic AI,AIML,4,1,PE,PE-V,3,30,70,180,AIML
+B23AM4109,Edge AI,AIML,4,1,PE,PE-V,3,30,70,180,AIML
+B23AMOE06,Deep Learning,AIML,4,1,OE,OE-III,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AMOE07,Object Oriented Programming Through Java,AIML,4,1,OE,OE-III,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AMOE08,Iot Based Smart Systems,AIML,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AMOE09,Computer Networks,AIML,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23AMOE10,Software Engineering,AIML,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23BSOE03,Mathematical Modelling For Data Science (Mmds),BSH,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23CB4101,Deep Learning Techniques,CSBS,4,1,PC,,3,30,70,180,CSBS
+B23CB4102,Embedded Systems,CSBS,4,1,PE,PE-IV,3,30,70,180,CSBS
+B23CB4103,Any of the12-WeekSWAYAM/NPTEL Course recommended by the BoS,CSBS,4,1,PE,PE-IV,3,30,70,180,CSBS
+B23CB4104,Data Visualization,CSBS,4,1,PE,PE-V,3,30,70,180,CSBS
+B23CBOE05,Principles Of Operating Systems,CSBS,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CD4101,Introduction to Block chain Technology,CSD,4,1,PE,PE-IV,3,30,70,180,CSD
+B23CD4102,Animation Principles and Design,CSD,4,1,PE,PE-IV,3,30,70,180,CSD
+B23CD4104,Introduction to Agile methodologies,CSD,4,1,PE,PE-V,3,30,70,180,CSD
+B23CD4105,Game Design & Development,CSD,4,1,PE,PE-V,3,30,70,180,CSD
+B23CD4106,Digital Audio Design & Synthesis,CSD,4,1,PE,PE-V,3,30,70,180,CSD
+B23CD4107,Big Data Analysis,CSD,4,1,PE,PE-V,3,30,70,180,CSD;CSIT
+B23CE4101,Geotechnical Engineering -II,CIVIL,4,1,PC,,3,30,70,180,CIVIL
+B23CE4102,Prestressed Concrete,CIVIL,4,1,PE,PE-IV,3,30,70,180,CIVIL
+B23CE4103,Advanced Environmental Engineering,CIVIL,4,1,PE,PE-IV,3,30,70,180,CIVIL
+B23CE4104,Urban Hydrology,CIVIL,4,1,PE,PE-IV,3,30,70,180,CIVIL
+B23CE4105,Foundations on Expansive Soils,CIVIL,4,1,PE,PE-IV,3,30,70,180,CIVIL
+B23CE4107,Geosynthetics and its applications,CIVIL,4,1,PE,PE-V,3,30,70,180,CIVIL
+B23CE4108,Environmental Impact assessment,CIVIL,4,1,PE,PE-V,3,30,70,180,CIVIL
+B23CE4109,Disaster Management and Preparedness,CIVIL,4,1,PE,PE-V,3,30,70,180,CIVIL
+B23CE4110,Traffic Engineering Management,CIVIL,4,1,PE,PE-V,3,30,70,180,CIVIL
+B23CEOE05,Sustainability In Engineering Practices,CIVIL,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23CEOE06,Solid Waste Management,CIVIL,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23CEOE07,Alternativeenergy Sources,CIVIL,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH
+B23CI4101,Ad-hoc Sensor Networks,CIC,4,1,PC,,3,30,70,180,CIC
+B23CI4102,IoT Applications,CIC,4,1,PE,PE-IV,3,30,70,180,CIC
+B23CI4103,Malware Analysis & Reverse Engineering,CIC,4,1,PE,PE-IV,3,30,70,180,CIC
+B23CI4104,Crypto Currency Technologies,CIC,4,1,PE,PE-IV,3,30,70,180,CIC
+B23CI4105,Design of IoT Architecture,CIC,4,1,PE,PE-IV,3,30,70,180,CIC
+B23CI4107,Cyber Laws and Security Policies,CIC,4,1,PE,PE-V,3,30,70,180,CIC
+B23CI4108,Intrusion Detection and Prevention System,CIC,4,1,PE,PE-V,3,30,70,180,CIC
+B23CI4109,Metaverse,CIC,4,1,PE,PE-V,3,30,70,180,CIC;CSBS
+B23CI4111,Augmented Reality & Virtual Reality,CIC,4,1,PE,PE-V,3,30,70,180,CIC
+B23CIOE05,Introduction To Cryptography And Network Security,CIC,4,1,OE,OE-III,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CIOE06,Computer Networks,CIC,4,1,OE,OE-III,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CIOE07,Intoduction To Cyber Security,CIC,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CIOE08,Introduction To Blockchain Technologies,CIC,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CS4101,Deep Learning,CSE,4,1,PC,,3,30,70,180,CSE
+B23CS4102,Software Architecture & Design Patterns,CSE,4,1,PE,PE-IV,3,30,70,180,AIDS;CSBS;CSD;CSE;IT
+B23CS4103,Blockchain Technology,CSE,4,1,PE,PE-IV,3,30,70,180,AIML;CSE
+B23CS4104,Augmented Reality & Virtual Reality,CSE,4,1,PE,PE-IV,3,30,70,180,CSBS;CSE
+B23CS4105,Internet of Things,CSE,4,1,PE,PE-IV,3,30,70,180,CSE
+B23CS4107,Agile Methodologies,CSE,4,1,PE,PE-V,3,30,70,180,AIDS;AIML;CSBS;CSE;IT
+B23CS4108,Generative AI,CSE,4,1,PE,PE-V,3,30,70,180,CSE
+B23CS4109,Computer Vision,CSE,4,1,PE,PE-V,3,30,70,180,CSBS;CSE
+B23CSOE04,Digital Marketing,CSE,4,1,OE,OE-III,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CSOE05,Principles Of Software Engineering,CSE,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CSOE06,Computer Networks,CSE,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23CT4101,Fundamentals of Deep Learning,CSIT,4,1,PC,,3,30,70,180,CSD;CSIT
+B23CT4102,Information Security,CSIT,4,1,PE,PE-IV,3,30,70,180,CSIT
+B23CT4103,Data Science using Python,CSIT,4,1,PE,PE-IV,3,30,70,180,CSD;CSIT
+B23CT4104,Mobile Computing,CSIT,4,1,PE,PE-IV,3,30,70,180,CSIT
+B23CT4105,Cyber Security,CSIT,4,1,PE,PE-IV,3,30,70,180,CSIT
+B23CT4107,Data Engineering,CSIT,4,1,PE,PE-V,3,30,70,180,CSIT
+B23CT4108,AI & NN,CSIT,4,1,PE,PE-V,3,30,70,180,CSIT
+B23CT4110,Advance Computing,CSIT,4,1,PE,PE-V,3,30,70,180,CSIT
+B23EC4101,Cellular and Mobile Communications,ECE,4,1,PC,,3,30,70,180,ECE
+B23EC4102,Analog VLSI Layout Techniques,ECE,4,1,PE,PE-IV,3,30,70,180,ECE
+B23EC4103,Embedded Communication Protocols & Interfaces,ECE,4,1,PE,PE-IV,3,30,70,180,ECE
+B23EC4104,Coding Theory & Applications,ECE,4,1,PE,PE-IV,3,30,70,180,ECE
+B23EC4105,Optical Fiber Communication,ECE,4,1,PE,PE-IV,3,30,70,180,ECE
+B23EC4106,DSP Processors and Architectures,ECE,4,1,PE,PE-IV,3,30,70,180,ECE
+B23EC4107,Design for Testability,ECE,4,1,PE,PE-IV,3,30,70,180,ECE
+B23EC4109,Internet of Things & its Applications,ECE,4,1,PE,PE-V,3,30,70,180,ECE
+B23EC4110,Digital Image Processing,ECE,4,1,PE,PE-V,3,30,70,180,ECE
+B23EC4111,Satellite Communication,ECE,4,1,PE,PE-V,3,30,70,180,ECE
+B23EC4112,Low Power VLSI Design,ECE,4,1,PE,PE-V,3,30,70,180,ECE
+B23ECOE03,Optical Communication,ECE,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;EEE;IT;MECH
+B23ECOE04,Fundamentals Of Vlsi Design,ECE,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;EEE;IT;MECH
+B23ECOE05,Electronic Measurements And Instrumentation,ECE,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;IT;MECH
+B23ECOE06,Principles Of Cellular & Mobile Communications,ECE,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;EEE;IT;MECH
+B23ECOE07,Image Processing,ECE,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;EEE;IT;MECH
+B23ECOE08,Fundamentals Of Satellite Communications,ECE,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;EEE;IT;MECH
+B23EE4101,Electric Vehicles,EEE,4,1,PC,,3,30,70,180,EEE
+B23EE4102,Battery Management &Charging Systems,EEE,4,1,PE,PE-IV,3,30,70,180,EEE
+B23EE4103,Power System Operation & Control,EEE,4,1,PE,PE-IV,3,30,70,180,EEE
+B23EE4104,Autonomous Vehicle Systems,EEE,4,1,PE,PE-IV,3,30,70,180,EEE
+B23EE4106,Power Electronic Drives,EEE,4,1,PE,PE-V,3,30,70,180,EEE
+B23EE4107,Power System Protection,EEE,4,1,PE,PE-V,3,30,70,180,EEE
+B23EE4108,Advanced Control Systems,EEE,4,1,PE,PE-V,3,30,70,180,EEE
+B23EEOE05,Autonomous Vehicle Systems,EEE,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;IT;MECH
+B23EEOE06,Electrical Circuit Analysis,EEE,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;IT;MECH
+B23EEOE07,Introduction To Drone Technology,EEE,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;IT;MECH
+B23EEOE08,Energy Management And Audit,EEE,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;IT;MECH
+B23HS4101,Human Resources & Project Management,BSH,4,1,HS,,2,30,70,180,AIDS;AIML;CSD;CSE;IT
+B23HS4102,Production & Operations Management,BSH,4,1,HS,,2,30,70,180,CIC;CSBS
+B23HS4103,Advanced Construction Management,BSH,4,1,HS,,2,30,70,180,CIVIL
+B23HS4104,Management Science,BSH,4,1,HS,,2,30,70,180,ECE
+B23HS4105,Energy Management and Audit,BSH,4,1,HS,,2,30,70,180,EEE
+B23IT4101,Internet of Things,IT,4,1,PC,,3,30,70,180,IT
+B23IT4102,Deep Learning,IT,4,1,PE,PE-IV,3,30,70,180,IT
+B23IT4103,Computer Vision,IT,4,1,PE,PE-IV,3,30,70,180,CSD;IT
+B23IT4104,Blockchain Technology & Applications,IT,4,1,PE,PE-IV,3,30,70,180,AIDS;CSBS;IT
+B23IT4106,Big Data Analytics,IT,4,1,PE,PE-V,3,30,70,180,IT
+B23IT4107,Mobile Computing,IT,4,1,PE,PE-V,3,30,70,180,IT
+B23IT4108,Cyber Physical Systems,IT,4,1,PE,PE-V,3,30,70,180,CSD;CSE;IT
+B23ITOE03,Principles Of Database Management Systems (For It),IT,4,1,OE,OE-III,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23ITOE04,Principles Of Operating Systems,IT,4,1,OE,OE-IV,3,30,70,180,CIVIL;ECE;EEE;MECH
+B23ME4101,CAD/CAM,MECH,4,1,PC,,2,30,70,180,MECH
+B23ME4102,Artificial Intelligence and Machine Learning,MECH,4,1,PC,,2,30,70,180,MECH
+B23ME4103,Advanced Materials,MECH,4,1,PE,PE-IV,3,30,70,180,MECH
+B23ME4104,Smart manufacturing,MECH,4,1,PE,PE-IV,3,30,70,180,MECH
+B23ME4105,Micro Electro Mechanical Systems,MECH,4,1,PE,PE-IV,3,30,70,180,MECH
+B23ME4106,Functional Materials and Applications,MECH,4,1,PE,PE-IV,3,30,70,180,MECH
+B23ME4108,Hydrogen and Fuel Cell Technology,MECH,4,1,PE,PE-V,3,30,70,180,MECH
+B23ME4109,Nano Technology,MECH,4,1,PE,PE-V,3,30,70,180,MECH
+B23ME4110,Conventional and futuristic vehicle technology,MECH,4,1,PE,PE-V,3,30,70,180,MECH
+B23ME4111,Autonomous Systems,MECH,4,1,PE,PE-V,3,30,70,180,MECH
+B23MEOE07,Total Quality Management,MECH,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT
+B23MEOE08,Smart Manufacturing,MECH,4,1,OE,OE-III,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT
+B23MEOE09,Additive Manufacturing,MECH,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT
+B23MEOE10,Industrial Safety,MECH,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT
+B23QTOE01,Quantum Science And Technology,BSH,4,1,OE,OE-IV,3,30,70,180,AIDS;AIML;CIC;CIVIL;CSBS;CSD;CSE;CSIT;ECE;EEE;IT;MECH

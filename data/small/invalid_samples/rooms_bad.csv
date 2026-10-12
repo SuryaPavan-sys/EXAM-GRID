@@ -1,0 +1,9 @@
+room_id,block,floor,rows,cols,capacity,room_type,is_ground_floor,exam_usable
+MB-001,Main Block,0,10,6,60,SEMINAR_HALL,yes,yes
+MB-002,Main Block,0,6,6,46,CLASSROOM,yes,yes
+MB-003,Main Block,0,6,6,36,CLASSROOM,yes,yes
+MB-004,Main Block,0,-2,6,-12,CLASSROOM,yes,yes
+MB-005,Main Block,0,7,6,42,CLASSROOM,yes,yes
+MB-005,Main Block,1,6,6,36,CLASSROOM,no,yes
+MB-102,Main Block,1,6,6,36,CLASSROOM,no,yes
+MB-103,Main Block,1,6,6,36,CLASSROOM,no,no

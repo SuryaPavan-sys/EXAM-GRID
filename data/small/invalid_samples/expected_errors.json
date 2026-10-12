@@ -1,0 +1,63 @@
+{
+  "students_bad.csv": [
+    {
+      "row": 5,
+      "column": "roll_no",
+      "error": "duplicate roll_no"
+    },
+    {
+      "row": 7,
+      "column": "branch",
+      "error": "required"
+    },
+    {
+      "row": 9,
+      "column": "year",
+      "error": "must be 1-4"
+    },
+    {
+      "row": 11,
+      "column": "needs_ground_floor",
+      "error": "must be yes/no"
+    }
+  ],
+  "registrations_bad.csv": [
+    {
+      "row": 4,
+      "column": "roll_no",
+      "error": "unknown student"
+    },
+    {
+      "row": 6,
+      "column": "subject_code",
+      "error": "unknown subject"
+    },
+    {
+      "row": 8,
+      "column": "subject_code",
+      "error": "duplicate registration"
+    },
+    {
+      "row": 10,
+      "column": "reg_type",
+      "error": "must be REGULAR/BACKLOG"
+    }
+  ],
+  "rooms_bad.csv": [
+    {
+      "row": 3,
+      "column": "capacity",
+      "error": "capacity must equal rows x cols"
+    },
+    {
+      "row": 5,
+      "column": "rows",
+      "error": "must be positive"
+    },
+    {
+      "row": 7,
+      "column": "room_id",
+      "error": "duplicate room_id"
+    }
+  ]
+}

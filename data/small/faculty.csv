@@ -1,0 +1,59 @@
+faculty_id,name,department,designation,max_duties
+SRKR0001,Bolla Sri Harsha,BSH,Assistant Professor,10
+SRKR0002,Dr. Chilukuri Phanindra,BSH,Assistant Professor,10
+SRKR0003,Vanapalli Chaitanya,BSH,Assistant Professor,10
+SRKR0004,Dr. Bhupathiraju Akhil,BSH,Assistant Professor,10
+SRKR0005,Mudunuri Tarun,BSH,Assistant Professor,10
+SRKR0006,Kanumuri Bhargavi,BSH,Assistant Professor,10
+SRKR0007,Dr. Kolli Mahesh Babu,BSH,Assistant Professor,10
+SRKR0008,Nalla Kavya,BSH,Assistant Professor,10
+SRKR0009,Kolli Rohith,CSE,Assistant Professor,10
+SRKR0010,Dr. Sirigineedi Uday Kiran,CSE,Associate Professor,7
+SRKR0011,Dr. Akula Sahithi,CSE,Associate Professor,7
+SRKR0012,Vanapalli Deepika,CSE,Assistant Professor,10
+SRKR0013,Bolla Sai Kiran,CSE,Assistant Professor,10
+SRKR0014,Dr. Rudraraju Pavan Kumar,CSE,Associate Professor,7
+SRKR0015,Dr. Alluri Ravi Teja,CSE,Assistant Professor,10
+SRKR0016,Dr. Chintalapati Jahnavi,CSE,Associate Professor,7
+SRKR0017,Dr. Datla Sravani,CSE,Associate Professor,7
+SRKR0018,Nalla Bhanu Prakash,AIDS,Assistant Professor,10
+SRKR0019,Yerramsetti Sai Priya,AIDS,Assistant Professor,10
+SRKR0020,Dr. Uppalapati Phanindra,AIDS,Professor,4
+SRKR0021,Thota Ganesh,AIDS,Assistant Professor,10
+SRKR0022,Kakarla Sri Harsha,AIDS,Assistant Professor,10
+SRKR0023,Dr. Vadlamudi Lavanya,AIDS,Associate Professor,7
+SRKR0024,Pydi Meghana,AIML,Assistant Professor,10
+SRKR0025,Dr. Nadimpalli Anusha,AIML,Assistant Professor,10
+SRKR0026,Kanumuri Ramya,AIML,Assistant Professor,10
+SRKR0027,Nadimpalli Manikanta,AIML,Assistant Professor,10
+SRKR0028,Dr. Addala Mahesh Babu,AIML,Professor,4
+SRKR0029,Penmetsa Deepika,AIML,Assistant Professor,10
+SRKR0030,Dr. Bolla Sahithi,IT,Associate Professor,7
+SRKR0031,Dr. Datla Vyshnavi,IT,Assistant Professor,10
+SRKR0032,Thota Vamsi Krishna,IT,Assistant Professor,10
+SRKR0033,Dr. Sirigineedi Phanindra,IT,Professor,4
+SRKR0034,Addala Vamsi Krishna,ECE,Assistant Professor,10
+SRKR0035,Koppisetti Harsha Vardhan,ECE,Assistant Professor,10
+SRKR0036,Velagala Divya Sri,ECE,Assistant Professor,10
+SRKR0037,Dr. Grandhi Rama Krishna,ECE,Associate Professor,7
+SRKR0038,Yerramsetti Dinesh,CSIT,Assistant Professor,10
+SRKR0039,Dr. Bandaru Karthik,CSIT,Associate Professor,7
+SRKR0040,Dr. Kakarla Pavan Kumar,CSIT,Professor,4
+SRKR0041,Sirigineedi Naga Raju,EEE,Assistant Professor,10
+SRKR0042,Jampana Tejaswi,EEE,Assistant Professor,10
+SRKR0043,Dr. Vadlamudi Sahithi,EEE,Assistant Professor,10
+SRKR0044,Dr. Kakarla Abhiram,CIVIL,Assistant Professor,10
+SRKR0045,Jampana Abhiram,CIVIL,Assistant Professor,10
+SRKR0046,Dr. Rudraraju Vamsi Krishna,CIVIL,Associate Professor,7
+SRKR0047,Dr. Uppalapati Phanindra,MECH,Associate Professor,7
+SRKR0048,Dr. Chilukuri Pavan Kumar,MECH,Professor,4
+SRKR0049,Dr. Bandaru Abhiram,MECH,Professor,4
+SRKR0050,Dr. Addala Mahesh Babu,CSBS,Associate Professor,7
+SRKR0051,Dr. Pydi Ganesh,CSBS,Associate Professor,7
+SRKR0052,Dr. Vadlamudi Ganesh,CSBS,Professor,4
+SRKR0053,Kalidindi Bhavani,CSD,Assistant Professor,10
+SRKR0054,Dr. Nalla Harsha Vardhan,CSD,Associate Professor,7
+SRKR0055,Pericherla Manikanta,CSD,Assistant Professor,10
+SRKR0056,Dr. Pericherla Sai Kiran,CIC,Professor,4
+SRKR0057,Jampana Durga Prasad,CIC,Assistant Professor,10
+SRKR0058,Mudunuri Yaswanth,CIC,Assistant Professor,10

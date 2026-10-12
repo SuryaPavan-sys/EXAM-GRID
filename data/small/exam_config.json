@@ -1,0 +1,28 @@
+{
+  "college": "SRKR Engineering College (Autonomous), Bhimavaram",
+  "regulation": "R23",
+  "exam_cycle": "NOV-2026 Semester End Examinations (Regular & Supplementary)",
+  "start_date": "2026-11-16",
+  "last_allowed_date": "2026-12-07",
+  "holidays": [
+    "2026-11-24"
+  ],
+  "exclude_weekdays": [
+    "Sunday"
+  ],
+  "sessions": [
+    {
+      "code": "FN",
+      "start": "10:00",
+      "end": "13:00"
+    },
+    {
+      "code": "AN",
+      "start": "14:00",
+      "end": "17:00"
+    }
+  ],
+  "max_exams_per_student_per_day": 1,
+  "students_per_invigilator": 30,
+  "reserve_invigilators_per_session": 2
+}

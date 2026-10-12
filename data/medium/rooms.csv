@@ -1,0 +1,45 @@
+room_id,block,floor,rows,cols,capacity,room_type,is_ground_floor,exam_usable
+MB-001,Main Block,0,10,6,60,SEMINAR_HALL,yes,yes
+MB-002,Main Block,0,6,6,36,CLASSROOM,yes,yes
+MB-003,Main Block,0,7,6,42,CLASSROOM,yes,yes
+MB-004,Main Block,0,8,6,48,CLASSROOM,yes,yes
+MB-005,Main Block,0,7,6,42,CLASSROOM,yes,yes
+MB-101,Main Block,1,6,6,36,CLASSROOM,no,yes
+MB-102,Main Block,1,6,6,36,CLASSROOM,no,yes
+MB-103,Main Block,1,7,6,42,CLASSROOM,no,yes
+MB-104,Main Block,1,7,6,42,CLASSROOM,no,yes
+MB-105,Main Block,1,8,6,48,CLASSROOM,no,yes
+MB-201,Main Block,2,6,6,36,CLASSROOM,no,yes
+MB-202,Main Block,2,7,6,42,CLASSROOM,no,yes
+MB-203,Main Block,2,8,6,48,CLASSROOM,no,yes
+MB-204,Main Block,2,7,6,42,CLASSROOM,no,yes
+MB-205,Main Block,2,7,6,42,CLASSROOM,no,yes
+MB-301,Main Block,3,7,6,42,CLASSROOM,no,yes
+MB-302,Main Block,3,7,6,42,CLASSROOM,no,yes
+MB-303,Main Block,3,6,6,36,CLASSROOM,no,yes
+MB-304,Main Block,3,8,6,48,CLASSROOM,no,yes
+MB-305,Main Block,3,6,6,36,CLASSROOM,no,yes
+CS-001,CSE Block,0,10,6,60,SEMINAR_HALL,yes,no
+CS-002,CSE Block,0,6,6,36,CLASSROOM,yes,yes
+CS-003,CSE Block,0,7,6,42,CLASSROOM,yes,yes
+CS-004,CSE Block,0,7,6,42,CLASSROOM,yes,yes
+CS-005,CSE Block,0,6,6,36,CLASSROOM,yes,yes
+CS-101,CSE Block,1,7,6,42,CLASSROOM,no,yes
+CS-102,CSE Block,1,6,6,36,CLASSROOM,no,yes
+CS-103,CSE Block,1,7,6,42,CLASSROOM,no,yes
+CS-104,CSE Block,1,8,6,48,CLASSROOM,no,yes
+CS-105,CSE Block,1,8,6,48,CLASSROOM,no,yes
+CS-201,CSE Block,2,6,6,36,CLASSROOM,no,yes
+CS-202,CSE Block,2,7,6,42,CLASSROOM,no,yes
+CS-203,CSE Block,2,7,6,42,CLASSROOM,no,yes
+CS-204,CSE Block,2,8,6,48,CLASSROOM,no,yes
+CS-205,CSE Block,2,7,6,42,CLASSROOM,no,yes
+CS-301,CSE Block,3,7,6,42,CLASSROOM,no,yes
+CS-302,CSE Block,3,6,6,36,CLASSROOM,no,no
+CS-303,CSE Block,3,7,6,42,CLASSROOM,no,yes
+CS-304,CSE Block,3,7,6,42,CLASSROOM,no,yes
+CS-305,CSE Block,3,8,6,48,CLASSROOM,no,yes
+AI-001,AI & DS Block,0,10,6,60,SEMINAR_HALL,yes,yes
+AI-002,AI & DS Block,0,6,6,36,CLASSROOM,yes,yes
+AI-003,AI & DS Block,0,8,6,48,CLASSROOM,yes,yes
+AI-004,AI & DS Block,0,6,6,36,CLASSROOM,yes,yes
