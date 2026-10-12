@@ -1,5 +1,6 @@
 package com.examgrid.solver.web;
 
+import com.examgrid.solver.seating.BranchPair;
 import com.examgrid.solver.seating.Room;
 import com.examgrid.solver.seating.SeatingService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,8 @@ public class SolverController {
     public record StudentDto(String roll_no, String subject_code, String branch, boolean needs_ground_floor) {
     }
 
-    public record SeatingRequest(List<RoomDto> rooms, List<StudentDto> students, Integer seconds) {
+    public record SeatingRequest(List<RoomDto> rooms, List<StudentDto> students, Integer seconds,
+                                 List<List<String>> branch_pairs) {
     }
 
     @GetMapping("/health")
@@ -38,6 +40,6 @@ public class SolverController {
                 .map(s -> new SeatingService.StudentPaper(s.roll_no(), s.subject_code(), s.branch(), s.needs_ground_floor()))
                 .toList();
         return new SeatingService(Duration.ofSeconds(seconds), Duration.ofSeconds(Math.max(2, seconds / 3)))
-                .seat(students, rooms);
+                .seat(students, rooms, BranchPair.fromLists(req.branch_pairs()));
     }
 }

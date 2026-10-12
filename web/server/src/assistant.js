@@ -13,7 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Anthropic from '@anthropic-ai/sdk';
 import { ApiError as GeminiApiError, GoogleGenAI } from '@google/genai';
-import { ACTION_TYPES, applyActions, checkSubjectMove, examDays, lastBackup, snapshot, undoLast, validateAction } from './planChanges.js';
+import { ACTION_TYPES, applyActions, branchPairStatus, checkSubjectMove, examDays, lastBackup, snapshot, undoLast, validateAction } from './planChanges.js';
 import { pipelineState, runPipelineAndWait } from './pipeline.js';
 import { store } from './store.js';
 
@@ -121,7 +121,7 @@ const lookups = {
       .map((t) => ({ subject_code: t.subject_code, subject_name: t.subject_name, department: t.department, year: t.year, students: t.students }));
     if (!subjects.length) return { error: `no exams on ${date} ${session}` };
     return { date, session, subjects, rooms: rooms.map((r) => ({ room_id: r.room_id, seated: r.seated, capacity: r.capacity,
-      papers: Object.keys(r.subjects).length, invigilators: r.invigilators })) };
+      papers: Object.keys(r.subjects).length, branches: r.branches, invigilators: r.invigilators })) };
   },
   get_room({ room_id }) {
     const room = store.rooms.get(String(room_id).toUpperCase());
@@ -162,6 +162,12 @@ const lookups = {
   },
   check_subject_move({ subject_code, date, session }) {
     return checkSubjectMove(String(subject_code).toUpperCase(), date, session);
+  },
+  check_branch_pair({ branch_a, branch_b }) {
+    const known = store.branches.map((b) => b.branch);
+    const bad = [branch_a, branch_b].find((b) => !known.includes(String(b ?? '').toUpperCase()));
+    if (bad !== undefined) return { error: `branch ${bad} not found; branches are ${known.join(', ')}` };
+    return branchPairStatus(branch_a, branch_b);
   },
 };
 
@@ -254,7 +260,9 @@ export async function undo(by) {
 // ------------------------------------------------------------------ Claude mode
 const nullable = (type, extra = {}) => ({ type: [type, 'null'], ...extra });
 const obj = (properties) => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
-const TOOLS = [
+const branchEnum = () => store.branches.map((b) => b.branch);
+// Built per request so the branch list follows a data import.
+const tools = () => [
   { name: 'get_plan_overview', description: 'Key facts and rule checks for the whole current plan: exam window, holidays, pinned subjects, timetable/seating/invigilation results, unusable rooms.', input_schema: obj({}) },
   { name: 'get_session', description: 'Subjects and rooms (with invigilators) of one exam session.', input_schema: obj({ date: { type: 'string', description: 'YYYY-MM-DD' }, session: { type: 'string', enum: ['FN', 'AN'] } }) },
   { name: 'get_room', description: 'A room: block, floor, seats, whether it is exam-usable, and every session it is used in.', input_schema: obj({ room_id: { type: 'string', description: 'e.g. CS-204' } }) },
@@ -263,6 +271,7 @@ const TOOLS = [
   { name: 'find_subject', description: 'Search scheduled subjects by code or name, with their current slot.', input_schema: obj({ query: { type: 'string' } }) },
   { name: 'get_subject', description: 'A subject: current slot, students (regular/backlog), rooms, whether it is pinned.', input_schema: obj({ subject_code: { type: 'string' } }) },
   { name: 'check_subject_move', description: 'Before proposing move_subject: what the target slot would collide with in the current plan.', input_schema: obj({ subject_code: { type: 'string' }, date: { type: 'string', description: 'YYYY-MM-DD' }, session: { type: 'string', enum: ['FN', 'AN'] } }) },
+  { name: 'check_branch_pair', description: 'Before proposing set_branch_pair: in how many sessions both branches write a paper (pairing only matters there), and how many rooms now hold both vs only one of them.', input_schema: obj({ branch_a: { type: 'string', enum: branchEnum() }, branch_b: { type: 'string', enum: branchEnum() } }) },
   {
     name: 'propose_changes',
     description: 'Propose changes to the exam data. They are validated and shown to the admin with an Apply button - they are NOT applied until the admin approves, after which the whole plan is regenerated. Unused fields must be null.',
@@ -271,11 +280,13 @@ const TOOLS = [
       actions: {
         type: 'array', minItems: 1,
         items: obj({
-          type: { type: 'string', enum: ACTION_TYPES, description: 'set_room_availability(room_id, usable) | add_faculty_leave(faculty_id, date, session FN/AN/BOTH) | add_holiday(date) | move_subject(subject_code, date, session FN/AN; pins it) | unpin_subject(subject_code) | set_last_exam_date(date)' },
+          type: { type: 'string', enum: ACTION_TYPES, description: 'set_room_availability(room_id, usable) | add_faculty_leave(faculty_id, date, session FN/AN/BOTH) | add_holiday(date) | move_subject(subject_code, date, session FN/AN; pins it) | unpin_subject(subject_code) | set_last_exam_date(date) | set_branch_pair(branch_a, branch_b; seat both branches in shared rooms) | clear_branch_pair(branch_a, branch_b)' },
           room_id: nullable('string'), usable: nullable('boolean'), faculty_id: nullable('string'),
           subject_code: nullable('string'), date: nullable('string', { description: 'YYYY-MM-DD' }),
           // "FN/AN/BOTH or null" must be anyOf: a typed enum may not contain null in a strict schema.
           session: { anyOf: [{ type: 'string', enum: ['FN', 'AN', 'BOTH'] }, { type: 'null' }] },
+          branch_a: { anyOf: [{ type: 'string', enum: branchEnum() }, { type: 'null' }] },
+          branch_b: { anyOf: [{ type: 'string', enum: branchEnum() }, { type: 'null' }] },
         }),
       },
     }),
@@ -291,9 +302,11 @@ ExamGrid builds the plan automatically: a DSatur graph-colouring timetable (no s
 
 How seating works (use this to explain room fill): every room is a chessboard of seats, and each paper sits on one colour only, so two students of the same paper are never side by side or front-to-back. A room holding a single paper is therefore at most about half full - by design. Rooms fill up when two or more papers share them; get_session shows how many papers each room holds.
 
+Branch pairs: the admin can ask for two branches to share rooms (e.g. "keep ECE and CSE in the same rooms"). set_branch_pair adds a soft seating preference; same-paper students still never sit side by side, and capacity and ground-floor needs still hold. It only matters in sessions where both branches write a paper, so call check_branch_pair first and tell the admin in how many sessions they meet and how many rooms they share now; if they never meet, say the pair would change nothing. Current pairs: ${(c.branch_pairs || []).map((p) => p.join('+')).join(', ') || 'none'}.
+
 How to work:
 - Look things up with the tools before stating facts about the plan; never guess codes, IDs, dates or numbers.
-- When the admin reports a problem or asks for a change that the actions can express (room unavailable/available, faculty leave, holiday, move or unpin a subject, change the last exam date), call propose_changes. Resolve names to IDs first (find_faculty / find_subject); if a name or subject is ambiguous, ask which one. For a subject move, call check_subject_move first and mention what it will displace.
+- When the admin reports a problem or asks for a change that the actions can express (room unavailable/available, faculty leave, holiday, move or unpin a subject, change the last exam date, pair or unpair two branches in shared rooms), call propose_changes. Resolve names to IDs first (find_faculty / find_subject); if a name or subject is ambiguous, ask which one. For a subject move, call check_subject_move first and mention what it will displace.
 - Proposals are applied only when the admin presses Apply; never say a change is done until you are told it was applied. After an apply, the whole plan is re-generated and you will receive the before/after numbers.
 - If a request cannot be expressed with the actions (for example swapping two individual students' seats, or changing a hard rule), say so plainly and point to the right screen (Seating editor, Data & pipeline) or what the developer would need to change.
 - A message may end with a [Screen context: ...] note saying which page, room or session the admin is looking at; use it to resolve "this room", "this session" and similar.
@@ -317,7 +330,7 @@ async function chatWithClaude(text) {
         output_config: { effort: 'medium' },
         cache_control: { type: 'ephemeral' },
         system: systemPrompt(),
-        tools: TOOLS,
+        tools: tools(),
         messages: state.history,
       }), LLM_TIMEOUT_MS, 'Claude');
     } catch (e) {
@@ -380,8 +393,8 @@ function runTool(name, input = {}) {
 }
 
 // ------------------------------------------------------------------ Gemini mode
-const GEMINI_TOOLS = [{
-  functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parametersJsonSchema: t.input_schema })),
+const geminiTools = () => [{
+  functionDeclarations: tools().map((t) => ({ name: t.name, description: t.description, parametersJsonSchema: t.input_schema })),
 }];
 
 async function chatWithGemini(text) {
@@ -392,7 +405,7 @@ async function chatWithGemini(text) {
       response = await withTimeout(gemini().models.generateContent({
         model: geminiModel(),
         contents: state.contents,
-        config: { systemInstruction: systemPrompt(), tools: GEMINI_TOOLS },
+        config: { systemInstruction: systemPrompt(), tools: geminiTools() },
       }), LLM_TIMEOUT_MS, 'Gemini');
     } catch (e) {
       const status = e instanceof GeminiApiError ? e.status : null;
@@ -443,6 +456,7 @@ const activityLabel = (name, input) => ({
   get_room: `Looked up room ${input.room_id}`, find_faculty: `Searched faculty "${input.query}"`,
   get_faculty: `Looked up ${input.faculty_id}`, find_subject: `Searched subjects "${input.query}"`,
   get_subject: `Looked up ${input.subject_code}`, check_subject_move: `Checked moving ${input.subject_code} to ${input.date} ${input.session}`,
+  check_branch_pair: `Checked where ${input.branch_a} and ${input.branch_b} write together`,
 }[name] || name);
 
 // ------------------------------------------------------------------ built-in parser mode
@@ -478,13 +492,33 @@ function findSubjectIn(s) {
   return hits.filter((h) => h.subject_name.length === longest);
 }
 
+/** Branch codes named in a text: CSE, ece, Civil... ("IT" only in capitals - "it" is a word). */
+function findBranchesIn(s) {
+  const found = [];
+  for (const code of store.branches.map((b) => b.branch)) {
+    const m = s.match(new RegExp(`\\b${code}\\b`, code.length > 2 ? 'i' : ''));
+    if (m) found.push({ code, at: m.index });
+  }
+  return found.sort((x, y) => x.at - y.at).map((f) => f.code);
+}
+const PAIR_WORDS = /\b(together|same rooms?|(?:share|shared|sharing) (?:the )?rooms?|pair(?:ed)?|mix(?:ed)?|club(?:bed)?|combined?)\b/i;
+const UNPAIR_WORDS = /\b(separate|unpair|no longer|stop|don'?t|do not|remove|clear|cancel)\b/i;
+
 function parseCommands(text) {
   const actions = [], notes = [];
   const parts = text.split(/[.;\n]+|\band\b(?=\s+(?:room|faculty|srkr|move|shift|declare|holiday|no exams?|dr\.?|mr|mrs|ms|prof))/i).map((p) => p.trim()).filter(Boolean);
   for (const p of parts) {
     const room = p.match(/\b([A-Z]{2}-\d{3})\b/i);
     const date = parseDate(p);
-    if (room && /(maintenance|repair|unavailable|not available|closed|broken|damage|leak|no power|out of order|can't be used|cannot be used|renovat)/i.test(p)) {
+    const branches = findBranchesIn(p);
+    if (!room && branches.length >= 2 && PAIR_WORDS.test(p)) {
+      const type = UNPAIR_WORDS.test(p) ? 'clear_branch_pair' : 'set_branch_pair';
+      for (let i = 0; i < branches.length; i++) {
+        for (let j = i + 1; j < branches.length; j++) actions.push({ type, branch_a: branches[i], branch_b: branches[j] });
+      }
+    } else if (!room && branches.length === 1 && PAIR_WORDS.test(p)) {
+      notes.push(`"${p}": which two branches should share rooms? e.g. "keep ECE and CSE together".`);
+    } else if (room && /(maintenance|repair|unavailable|not available|closed|broken|damage|leak|no power|out of order|can't be used|cannot be used|renovat)/i.test(p)) {
       actions.push({ type: 'set_room_availability', room_id: room[1].toUpperCase(), usable: false });
     } else if (room && /(available|open|fixed|ready|repaired|back|usable)/i.test(p)) {
       actions.push({ type: 'set_room_availability', room_id: room[1].toUpperCase(), usable: true });
@@ -540,6 +574,7 @@ function chatWithParser(text) {
 - "Declare 28 Nov a holiday"
 - "Move B23CS3102 to 25 Nov FN"
 - "Extend the last exam date to 12 Dec"
+- "Keep ECE and CSE students in the same rooms"
 
 Right now: ${o.timetable.days_used} exam days (${o.timetable.first} to ${o.timetable.last}), ${o.timetable.clashes} clashes, ${o.seating.same_subject_neighbours} same-paper neighbours.
 To ask questions in any wording, add a free Gemini API key (or a Claude key) - see the note at the top.` });

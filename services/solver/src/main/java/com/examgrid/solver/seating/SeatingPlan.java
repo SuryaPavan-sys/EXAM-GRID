@@ -17,6 +17,9 @@ public class SeatingPlan {
     @ValueRangeProvider
     private List<RoomHalf> halves;
 
+    @ProblemFactCollectionProperty
+    private List<BranchPair> branchPairs;
+
     @PlanningEntityCollectionProperty
     private List<SeatBlock> blocks;
 
@@ -27,8 +30,13 @@ public class SeatingPlan {
     }
 
     public SeatingPlan(List<RoomHalf> halves, List<SeatBlock> blocks) {
+        this(halves, blocks, List.of());
+    }
+
+    public SeatingPlan(List<RoomHalf> halves, List<SeatBlock> blocks, List<BranchPair> branchPairs) {
         this.halves = halves;
         this.blocks = blocks;
+        this.branchPairs = branchPairs;
     }
 
     public List<RoomHalf> getHalves() {
@@ -37,6 +45,10 @@ public class SeatingPlan {
 
     public List<SeatBlock> getBlocks() {
         return blocks;
+    }
+
+    public List<BranchPair> getBranchPairs() {
+        return branchPairs;
     }
 
     public HardSoftScore getScore() {

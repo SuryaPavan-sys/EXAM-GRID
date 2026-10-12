@@ -95,10 +95,13 @@ class Store {
       const [d, s, roomId] = k.split('|');
       if (d !== date || s !== session) continue;
       const room = this.rooms.get(roomId);
-      const subjects = {};
-      for (const seat of seats.values()) subjects[seat.subject_code] = (subjects[seat.subject_code] || 0) + 1;
+      const subjects = {}, branches = {};
+      for (const seat of seats.values()) {
+        subjects[seat.subject_code] = (subjects[seat.subject_code] || 0) + 1;
+        branches[seat.branch] = (branches[seat.branch] || 0) + 1;
+      }
       rooms.push({ room_id: roomId, block: room.block, floor: room.floor, capacity: room.capacity, seated: seats.size,
-        subjects, invigilators: this.dutiesOf(date, session, roomId).map((x) => x.faculty_name),
+        subjects, branches, invigilators: this.dutiesOf(date, session, roomId).map((x) => x.faculty_name),
         violations: this.violations(date, session, roomId).length });
     }
     return rooms.sort((a, b) => a.room_id.localeCompare(b.room_id));

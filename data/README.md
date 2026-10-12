@@ -86,6 +86,8 @@ Branch name, roll code, whether that code is confirmed, and 2026 intake.
 NOV-2026 window (starts Mon 16 Nov 2026, no Sundays, one example holiday), FN 10:00–13:00
 and AN 14:00–17:00, 1 exam per student per day, 30 students per invigilator.
 **Session times are assumed**; replace them with SRKR's actual timings if they differ.
+Optional keys written by the Plan Assistant: `fixed_slots` (pinned subjects) and `branch_pairs`
+(e.g. `[["CSE", "ECE"]]`: seat these branches in the same rooms where they share a session).
 
 ### attendance_history.csv
 Turnout from four past cycles (Nov 2022–2025) over the real core courses, one row per course

@@ -57,6 +57,8 @@ Taken on the full SRKR dataset (all data synthetic). A sample hall ticket is in
 3. **Seating (constraint solving).** Each room is a chessboard, and each paper takes one colour,
    so same-paper students can never be neighbours. **Timefold** packs students into rooms (seats,
    ground floor) while opening as few rooms as possible and keeping each subject together.
+   Optional branch pairs (`"branch_pairs": [["CSE", "ECE"]]` in `exam_config.json`) are a soft
+   preference to seat both branches in the same rooms, in sessions where both write a paper.
 4. **Invigilation (constraint solving).** Timefold assigns faculty under these rules: never their
    own subject, never two rooms at once, leave respected, duty caps by designation, fair load.
 5. **Website.** Dashboard, timetable, seating editor (drag and drop, rules checked live), duties,
@@ -66,7 +68,8 @@ Taken on the full SRKR dataset (all data synthetic). A sample hall ticket is in
    example "Room CS-204 has no power, and SRKR0012 can't come on 2 Dec FN".
    - With Claude (`claude-opus-5-5`, tool use), the assistant looks up the plan, checks the
      request, and proposes changes. It can only propose a fixed set of validated actions: room
-     availability, faculty leave, holiday, move/pin an exam, last exam date.
+     availability, faculty leave, holiday, move/pin an exam, last exam date, pair two branches
+     in shared rooms ("keep ECE and CSE in the same rooms").
    - **Apply** backs up the data, re-runs timetable → turnout → seating → duties, and shows a
      before/after table. **Undo** restores the backup and re-plans.
    - Without an API key, a built-in parser handles clear commands. Put `ANTHROPIC_API_KEY` in

@@ -4,6 +4,7 @@ import com.examgrid.solver.duty.Duty;
 import com.examgrid.solver.duty.DutyService;
 import com.examgrid.solver.duty.Faculty;
 import com.examgrid.solver.io.Csv;
+import com.examgrid.solver.seating.BranchPair;
 import com.examgrid.solver.seating.Room;
 import com.examgrid.solver.seating.SeatingService;
 import com.examgrid.solver.seating.SeatingService.Seat;
@@ -31,7 +32,8 @@ import java.util.concurrent.Future;
  * <pre>
  *   batch DATA_DIR OUT_DIR [seconds-per-session]
  * </pre>
- * Reads the dataset CSVs plus OUT_DIR/timetable.csv (and OUT_DIR/turnout_papers.csv if present),
+ * Reads the dataset CSVs, exam_config.json "branch_pairs" (branches to seat in shared rooms),
+ * OUT_DIR/timetable.csv (and OUT_DIR/turnout_papers.csv if present),
  * writes OUT_DIR/seating.csv, duties.csv and solver_report.json.
  */
 public final class BatchRunner {
@@ -74,6 +76,7 @@ public final class BatchRunner {
                 attendProb.put(p.get("roll_no") + "|" + p.get("subject_code"), Double.parseDouble(p.get("attend_prob")));
             }
         }
+        List<BranchPair> branchPairs = loadBranchPairs(data);
         Map<String, List<StudentPaper>> bySession = new TreeMap<>();
         for (Map<String, String> r : Csv.read(data.resolve("registrations.csv"))) {
             String key = sessionOf.get(r.get("subject_code"));
@@ -87,12 +90,15 @@ public final class BatchRunner {
 
         // ---------------------------------------------------------- seating, sessions in parallel
         System.out.printf("Seating %d sessions over %d rooms (%d s limit each)...%n", bySession.size(), rooms.size(), seconds);
+        if (!branchPairs.isEmpty()) {
+            System.out.println("  branch pairs to seat in shared rooms: " + branchPairs);
+        }
         SeatingService seating = new SeatingService(Duration.ofSeconds(seconds), Duration.ofSeconds(Math.max(2, seconds / 3)));
         int threads = Math.max(2, Runtime.getRuntime().availableProcessors() / 2);
         ExecutorService pool = Executors.newFixedThreadPool(threads);
         Map<String, Future<SeatingService.Result>> futures = new LinkedHashMap<>();
         for (Map.Entry<String, List<StudentPaper>> e : bySession.entrySet()) {
-            futures.put(e.getKey(), pool.submit(() -> seating.seat(e.getValue(), rooms)));
+            futures.put(e.getKey(), pool.submit(() -> seating.seat(e.getValue(), rooms, branchPairs)));
         }
         Map<String, SeatingService.Result> seated = new LinkedHashMap<>();
         SeatingService patient = new SeatingService(Duration.ofSeconds(seconds * 3L), Duration.ofSeconds(Math.max(4, seconds)));
@@ -101,7 +107,7 @@ public final class BatchRunner {
             // The search is time-limited; a very tight session gets two more, longer attempts.
             for (int retry = 1; retry <= 2 && !Boolean.TRUE.equals(r.checks().get("ok")); retry++) {
                 System.out.printf("  %s  not fully solved (%s), retrying with more time (%d/2)%n", e.getKey(), r.score(), retry);
-                r = patient.seat(bySession.get(e.getKey()), rooms);
+                r = patient.seat(bySession.get(e.getKey()), rooms, branchPairs);
             }
             seated.put(e.getKey(), r);
             Map<String, Object> c = r.checks();
@@ -168,6 +174,14 @@ public final class BatchRunner {
         totals.put("same_subject_neighbours", seated.values().stream().mapToInt(r -> (int) r.checks().get("same_subject_neighbours")).sum());
         totals.put("ground_floor_violations", seated.values().stream().mapToLong(r -> ((Number) r.checks().get("ground_floor_violations")).longValue()).sum());
         totals.put("room_sessions", seated.values().stream().mapToInt(r -> (int) r.checks().get("rooms_opened")).sum());
+        if (!branchPairs.isEmpty()) {
+            Map<String, Map<String, Integer>> pairs = new LinkedHashMap<>();
+            for (SeatingService.Result r : seated.values()) {
+                SeatingService.pairStats(r.seats(), branchPairs).forEach((pair, stat) -> stat.forEach((k, v) ->
+                        pairs.computeIfAbsent(pair, x -> new LinkedHashMap<>()).merge(k, v, Integer::sum)));
+            }
+            totals.put("branch_pairs", pairs);
+        }
         totals.put("all_sessions_ok", seated.values().stream().allMatch(r -> Boolean.TRUE.equals(r.checks().get("ok"))));
         Map<String, Object> perSession = new LinkedHashMap<>();
         seated.forEach((k, r) -> perSession.put(k, Map.of("score", r.score(), "checks", r.checks())));
@@ -183,6 +197,17 @@ public final class BatchRunner {
                 (System.currentTimeMillis() - t0) / 1000.0, out);
         boolean ok = Boolean.TRUE.equals(totals.get("all_sessions_ok")) && Boolean.TRUE.equals(roster.checks().get("ok"));
         return ok ? 0 : 2;
+    }
+
+    /** exam_config.json "branch_pairs": [["CSE","ECE"], ...]; none if the file or key is missing. */
+    @SuppressWarnings("unchecked")
+    static List<BranchPair> loadBranchPairs(Path data) throws Exception {
+        Path config = data.resolve("exam_config.json");
+        if (!Files.exists(config)) {
+            return List.of();
+        }
+        Object pairs = new ObjectMapper().readValue(config.toFile(), Map.class).get("branch_pairs");
+        return pairs instanceof List<?> list ? BranchPair.fromLists((List<List<String>>) list) : List.of();
     }
 
     private static List<Faculty> loadFaculty(Path data) throws Exception {

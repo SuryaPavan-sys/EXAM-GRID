@@ -7,7 +7,7 @@ import { DATA_DIR } from './paths.js';
 import { store } from './store.js';
 
 export const ACTION_TYPES = ['set_room_availability', 'add_faculty_leave', 'add_holiday', 'move_subject',
-  'unpin_subject', 'set_last_exam_date'];
+  'unpin_subject', 'set_last_exam_date', 'set_branch_pair', 'clear_branch_pair'];
 const FILES = ['rooms.csv', 'faculty_unavailability.csv', 'exam_config.json'];
 const HISTORY = path.join(DATA_DIR, '.history');
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
@@ -66,6 +66,45 @@ export function checkSubjectMove(code, date, session) {
   };
 }
 
+// ------------------------------------------------------------------ branch pairs
+// exam_config.json "branch_pairs": [["CSE","ECE"], ...] asks the seating solver to put both
+// branches in the same rooms. Pairs are stored sorted so CSE+ECE and ECE+CSE are the same pair.
+const branchCodes = () => store.branches.map((b) => b.branch);
+export const normalPair = (a, b) => [String(a ?? '').trim().toUpperCase(), String(b ?? '').trim().toUpperCase()].sort();
+const pairsOf = (config) => (config.branch_pairs || []).map(([a, b]) => normalPair(a, b));
+const hasPair = (config, [a, b]) => pairsOf(config).some(([x, y]) => x === a && y === b);
+
+/**
+ * How a branch pair sits in the current plan: the sessions where both branches write a paper
+ * (pairing only matters there) and, in those sessions, rooms holding both vs only one of them.
+ */
+export function branchPairStatus(branchA, branchB) {
+  const [a, b] = normalPair(branchA, branchB);
+  const sessionsOf = { [a]: new Set(), [b]: new Set() };
+  for (const r of store.registrations) {
+    const branch = store.students.get(r.roll_no)?.branch;
+    const t = store.slotOf.get(r.subject_code);
+    if (t && sessionsOf[branch]) sessionsOf[branch].add(`${t.exam_date} ${t.session}`);
+  }
+  const shared = [...sessionsOf[a]].filter((k) => sessionsOf[b].has(k)).sort();
+  const meets = new Set(shared);
+  let both = 0, oneOnly = 0;
+  for (const [k, seats] of store.seating) {
+    const [date, session] = k.split('|');
+    if (!meets.has(`${date} ${session}`)) continue;
+    const here = new Set([...seats.values()].map((s) => s.branch));
+    if (here.has(a) && here.has(b)) both++;
+    else if (here.has(a) || here.has(b)) oneOnly++;
+  }
+  return {
+    pair: [a, b], paired: hasPair(store.config, [a, b]),
+    sessions_with_both: shared.length, sessions_with_a: sessionsOf[a].size, sessions_with_b: sessionsOf[b].size,
+    rooms_with_both: both, rooms_with_only_one: oneOnly, shared_sessions: shared,
+    note: shared.length ? `${a} and ${b} both write in ${shared.length} sessions; pairing can only mix them in those.`
+      : `${a} and ${b} never write in the same session, so pairing them changes nothing in this plan.`,
+  };
+}
+
 /** Validate one action; returns { ok, error } or { ok, description }. */
 export function validateAction(a) {
   const config = store.config;
@@ -110,6 +149,23 @@ export function validateAction(a) {
       if (late) return bad(`${late[0]} is pinned to ${late[1].date}, after ${a.date}`);
       return { ok: true, description: `Set the last allowed exam date to ${weekday(a.date)} ${a.date} (now ${config.last_allowed_date})` };
     }
+    case 'set_branch_pair':
+    case 'clear_branch_pair': {
+      const [x, y] = normalPair(a.branch_a, a.branch_b);
+      const known = branchCodes();
+      for (const code of [x, y]) if (!known.includes(code)) return bad(`branch ${code || '(empty)'} does not exist; use one of ${known.join(', ')}`);
+      if (x === y) return bad('pick two different branches');
+      const paired = hasPair(config, [x, y]);
+      if (a.type === 'clear_branch_pair') {
+        if (!paired) return bad(`${x} and ${y} are not paired`);
+        return { ok: true, description: `Stop asking for ${x} and ${y} students to share rooms` };
+      }
+      if (paired) return bad(`${x} and ${y} are already paired`);
+      const st = branchPairStatus(x, y);
+      return { ok: true, description: st.sessions_with_both
+        ? `Seat ${x} and ${y} students in shared rooms in the ${st.sessions_with_both} sessions where both write (now ${st.rooms_with_both} shared rooms, ${st.rooms_with_only_one} with only one of them); seating rules stay as they are`
+        : `Pair ${x} and ${y} in shared rooms - note they never write in the same session now, so this changes nothing until the timetable puts them together` };
+    }
     default:
       return bad(`unknown action type ${a?.type}; use one of ${ACTION_TYPES.join(', ')}`);
   }
@@ -141,6 +197,12 @@ export function applyActions(actions) {
       config.fixed_slots = rest;
     } else if (a.type === 'set_last_exam_date') {
       config.last_allowed_date = a.date;
+    } else if (a.type === 'set_branch_pair') {
+      const pair = normalPair(a.branch_a, a.branch_b);
+      if (!hasPair(config, pair)) config.branch_pairs = [...pairsOf(config), pair];
+    } else if (a.type === 'clear_branch_pair') {
+      const [x, y] = normalPair(a.branch_a, a.branch_b);
+      config.branch_pairs = pairsOf(config).filter(([p, q]) => !(p === x && q === y));
     }
   }
   if (rooms) writeCsv('rooms.csv', rooms);
@@ -183,6 +245,12 @@ export function snapshot(actions = []) {
     if (a.subject_code) {
       const t = store.slotOf.get(a.subject_code);
       facts[`${a.subject_code} slot`] = t ? `${t.exam_date} ${t.session}` : 'not scheduled';
+    }
+    if (a.branch_a && a.branch_b) {
+      const st = branchPairStatus(a.branch_a, a.branch_b);
+      const [x, y] = st.pair;
+      facts[`rooms with both ${x} and ${y}`] = String(st.rooms_with_both);
+      facts[`rooms with only one of ${x}/${y}`] = String(st.rooms_with_only_one);
     }
     if (a.type === 'add_holiday') {
       facts[`exams on ${a.date}`] = String(store.timetable.filter((t) => t.exam_date === a.date).length);

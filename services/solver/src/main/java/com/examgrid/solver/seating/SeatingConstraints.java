@@ -16,7 +16,8 @@ import ai.timefold.solver.core.api.score.stream.Joiners;
  *   <li>students who need the ground floor are seated on it.</li>
  * </ul>
  * Soft goals (as good as possible): open few rooms, keep each subject in few rooms and few
- * buildings (easier question-paper distribution), and keep each branch's students together.
+ * buildings (easier question-paper distribution), keep each branch's students together, and
+ * seat configured branch pairs (exam_config.json "branch_pairs") in the same rooms.
  */
 public class SeatingConstraints implements ConstraintProvider {
 
@@ -30,6 +31,7 @@ public class SeatingConstraints implements ConstraintProvider {
                 subjectSpreadOverRooms(f),
                 subjectSpreadOverBuildings(f),
                 branchSpreadOverRooms(f),
+                branchPairApart(f),
         };
     }
 
@@ -86,5 +88,19 @@ public class SeatingConstraints implements ConstraintProvider {
                 .filter((branch, rooms) -> rooms > 1)
                 .penalize(HardSoftScore.ofSoft(1), (branch, rooms) -> rooms - 1)
                 .asConstraint("Branch split over rooms");
+    }
+
+    /**
+     * A room holding one branch of a configured pair but not the other. SeatingService only passes
+     * pairs whose two branches both write in the session, so the other branch could have been there.
+     */
+    Constraint branchPairApart(ConstraintFactory f) {
+        return f.forEach(SeatBlock.class)
+                .join(BranchPair.class, Joiners.filtering((block, pair) -> pair.includes(block.getBranch())))
+                .groupBy((block, pair) -> block.getRoomId(), (block, pair) -> pair,
+                        ConstraintCollectors.countDistinct((block, pair) -> block.getBranch()))
+                .filter((room, pair, branches) -> branches < 2)
+                .penalize(HardSoftScore.ofSoft(30))
+                .asConstraint("Paired branches in separate rooms");
     }
 }

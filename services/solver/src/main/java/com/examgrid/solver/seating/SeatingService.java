@@ -10,9 +10,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /** Seats every student of one exam session. */
@@ -40,7 +42,12 @@ public class SeatingService {
     }
 
     public Result seat(List<StudentPaper> students, List<Room> rooms) {
-        SeatingPlan problem = buildProblem(students, rooms);
+        return seat(students, rooms, List.of());
+    }
+
+    /** As {@link #seat(List, List)}, also trying to seat each branch pair in shared rooms. */
+    public Result seat(List<StudentPaper> students, List<Room> rooms, List<BranchPair> branchPairs) {
+        SeatingPlan problem = buildProblem(students, rooms, branchPairs);
         SolverConfig config = new SolverConfig()
                 .withSolutionClass(SeatingPlan.class)
                 .withEntityClasses(SeatBlock.class)
@@ -56,7 +63,7 @@ public class SeatingService {
         return new Result(score.toString(), score.isFeasible(), seats, checks);
     }
 
-    static SeatingPlan buildProblem(List<StudentPaper> students, List<Room> rooms) {
+    static SeatingPlan buildProblem(List<StudentPaper> students, List<Room> rooms, List<BranchPair> branchPairs) {
         List<RoomHalf> halves = new ArrayList<>();
         for (Room r : rooms) {
             halves.add(new RoomHalf(r, 0));
@@ -79,7 +86,39 @@ public class SeatingService {
                         part.stream().map(StudentPaper::roll).toList(), first.needsGroundFloor()));
             }
         }
-        return new SeatingPlan(halves, blocks);
+        // A pair only matters when both branches write in this session.
+        Set<String> branches = new HashSet<>();
+        blocks.forEach(b -> branches.add(b.getBranch()));
+        List<BranchPair> pairs = branchPairs.stream()
+                .filter(p -> branches.contains(p.a()) && branches.contains(p.b())).toList();
+        return new SeatingPlan(halves, blocks, pairs);
+    }
+
+    /** Per pair that meets in this session: rooms holding both branches, and rooms holding only one. */
+    public static Map<String, Map<String, Integer>> pairStats(List<Seat> seats, List<BranchPair> branchPairs) {
+        Map<String, Set<String>> branchesByRoom = new TreeMap<>();
+        Set<String> present = new HashSet<>();
+        seats.forEach(s -> {
+            branchesByRoom.computeIfAbsent(s.roomId(), k -> new HashSet<>()).add(s.branch());
+            present.add(s.branch());
+        });
+        Map<String, Map<String, Integer>> out = new LinkedHashMap<>();
+        for (BranchPair p : branchPairs) {
+            if (!present.contains(p.a()) || !present.contains(p.b())) {
+                continue; // the pair does not meet in this session
+            }
+            int shared = 0, oneOnly = 0;
+            for (Set<String> b : branchesByRoom.values()) {
+                boolean a = b.contains(p.a()), c = b.contains(p.b());
+                if (a && c) shared++;
+                else if (a || c) oneOnly++;
+            }
+            Map<String, Integer> stat = new LinkedHashMap<>();
+            stat.put("shared_rooms", shared);
+            stat.put("one_branch_only_rooms", oneOnly);
+            out.put(p.toString(), stat);
+        }
+        return out;
     }
 
     /** Turn block -> room-half decisions into concrete seats, filling each colour row by row. */
