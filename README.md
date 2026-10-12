@@ -19,6 +19,22 @@ rule with an independent checker.
 | Seating | all 40,919 seated · **0 same-paper neighbours** (left/right/front/back) · ground-floor needs met |
 | Invigilation | 1,932 duties · 0 own-subject · 0 double-booked · leave respected · 2–5 duties each |
 
+## Screenshots
+
+Taken on the full SRKR dataset (all data synthetic). A sample hall ticket is in
+[docs/screenshots/hall-ticket-24B91A0510.pdf](docs/screenshots/hall-ticket-24B91A0510.pdf).
+
+| | |
+|---|---|
+| **Exam cell dashboard**: every rule checked | **Seating editor**: chessboard seating, drag and drop |
+| ![Dashboard](docs/screenshots/02-admin-dashboard.png) | ![Seating](docs/screenshots/03-seating-editor.png) |
+| **Plan Assistant**: ask doubts, give commands | **Floating chat** on every admin page |
+| ![Plan Assistant](docs/screenshots/07-plan-assistant-answer.png) | ![Floating chat](docs/screenshots/09-floating-chat.png) |
+| **Invigilation duties** | **Turnout model** vs the hidden rule |
+| ![Invigilation](docs/screenshots/04-invigilation.png) | ![Turnout](docs/screenshots/05-turnout-model.png) |
+| **Student view**: exams, rooms, seats, hall ticket | **Login + public "Find my seat"** |
+| ![Student](docs/screenshots/10-student-my-exams.png) | ![Login](docs/screenshots/01-login-and-find-my-seat.png) |
+
 ## How it works
 
 ```
