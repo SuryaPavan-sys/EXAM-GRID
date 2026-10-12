@@ -40,6 +40,8 @@ export function login(role, username, password) {
 }
 
 export function demoAccounts() {
+  // Set HIDE_DEMO_ACCOUNTS=true (in .env) before sharing the site on a public link.
+  if (/^(1|true|yes)$/i.test(process.env.HIDE_DEMO_ACCOUNTS || '')) return { hidden: true };
   return {
     note: 'Local demo accounts (from web/server/seed/users.json)',
     admin: { username: seed.admin.username, password: seed.admin.password },

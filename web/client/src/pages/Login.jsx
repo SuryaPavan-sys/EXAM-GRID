@@ -20,7 +20,7 @@ export default function Login() {
   const [roll, setRoll] = useState('');
   const [lookup, setLookup] = useState(null);
 
-  useEffect(() => { api('/auth/demo-accounts').then(setDemo).catch(() => {}); }, []);
+  useEffect(() => { api('/auth/demo-accounts').then((d) => setDemo(d.hidden ? null : d)).catch(() => {}); }, []);
 
   const submit = async (e) => {
     e.preventDefault();
