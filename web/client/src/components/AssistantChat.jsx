@@ -110,7 +110,11 @@ export function useAssistant() {
   };
 }
 
-export const providerLabel = (conv) => ({ gemini: `Gemini · ${conv.model}`, claude: `Claude · ${conv.model}`, parser: 'Built-in parser' }[conv.provider] || conv.model);
+export const providerLabel = (conv) => ({
+  claude: `Claude${/backup/.test(conv.model) ? ' + Gemini backup' : ''}`,
+  gemini: `Gemini${/backup/.test(conv.model) ? ' + Claude backup' : ''}`,
+  parser: 'Built-in parser',
+}[conv.provider] || conv.model);
 
 /** The message list + input box. `compact` is the floating-dock layout. */
 export default function AssistantChat({ chat, compact = false, height = '62vh' }) {

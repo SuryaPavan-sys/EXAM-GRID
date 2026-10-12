@@ -64,12 +64,37 @@ test('a change request becomes a proposal, never an applied change', async () =>
   assistant.resetConversation();
 });
 
-test('a free-tier rate limit is reported plainly', async () => {
+test('a free-tier rate limit is reported plainly, then the built-in parser answers', async () => {
+  delete process.env.ANTHROPIC_API_KEY;
   const { ApiError } = await import('@google/genai');
   assistant._setGeminiClientForTests({ models: { async generateContent() {
     throw new ApiError({ message: 'Resource exhausted', status: 429 });
   } } });
   const conv = await assistant.sendMessage('hello', 'Tester');
-  assert.match(conv.items.at(-1).text, /free-tier limit/);
+  assert.ok(conv.items.some((i) => i.kind === 'activity' && /free-tier limit/.test(i.text) && /built-in parser/.test(i.text)));
+  assert.equal(conv.items.at(-1).kind, 'assistant');
+  assistant.resetConversation();
+});
+
+test('Claude is asked first; when it fails, Gemini answers the same message', async () => {
+  process.env.ANTHROPIC_API_KEY = 'test-claude-key';
+  delete process.env.ASSISTANT_PROVIDER;
+  assert.deepEqual(assistant.providerOrder(), ['claude', 'gemini']);
+  const Anthropic = (await import('@anthropic-ai/sdk')).default;
+  let claudeCalls = 0;
+  assistant._setClaudeClientForTests({ beta: { messages: { async create() {
+    claudeCalls += 1;
+    throw new Anthropic.APIConnectionError({ message: 'Connection error.' });
+  } } } });
+  const stub = stubGemini([[{ text: 'Gemini here: the plan has 0 clashes.' }]]);
+  assistant._setGeminiClientForTests(stub);
+
+  const conv = await assistant.sendMessage('Are there any clashes?', 'Tester');
+  assert.equal(claudeCalls, 1);
+  assert.equal(stub.calls.length, 1);
+  assert.ok(conv.items.some((i) => i.kind === 'activity' && /asking Gemini instead/.test(i.text)));
+  assert.equal(conv.items.at(-1).text, 'Gemini here: the plan has 0 clashes.');
+  delete process.env.ANTHROPIC_API_KEY;
+  process.env.ASSISTANT_PROVIDER = 'gemini';
   assistant.resetConversation();
 });

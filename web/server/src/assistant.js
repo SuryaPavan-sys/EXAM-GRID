@@ -2,11 +2,11 @@
 // proposes checked changes. Nothing changes until the admin presses Apply, which edits the data,
 // re-runs the whole pipeline and reports what changed.
 //
-// Which LLM answers (keys go in web/server/.env):
-//   GEMINI_API_KEY    -> Google Gemini (free tier available)          [preferred when set]
-//   ANTHROPIC_API_KEY -> Claude
-//   neither           -> built-in parser for clear commands
-// ASSISTANT_PROVIDER=gemini|claude|parser forces one when several are configured.
+// Which LLM answers (keys go in web/server/.env), tried in this order for every message:
+//   1. ANTHROPIC_API_KEY -> Claude
+//   2. GEMINI_API_KEY    -> Google Gemini (free tier), if Claude fails or has no key
+//   3. built-in parser for clear commands, if no LLM could answer
+// ASSISTANT_PROVIDER=gemini|claude|parser puts that one first.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,27 +19,41 @@ import { store } from './store.js';
 
 const FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../var/assistant.json');
 const CLAUDE_MODEL = 'claude-opus-5-5';
-const geminiModel = () => process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+// gemini-3.5-flash-lite: free tier and answers in ~2 s (gemini-3.8-flash timed out in testing).
+const geminiModel = () => process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 const MAX_TOOL_ROUNDS = 8;
+const LLM_TIMEOUT_MS = 90_000;  // per request; a stuck provider must not freeze the chat
 
 const geminiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 const claudeKey = () => process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN;
-export function provider() {
+
+/** LLMs to try for a message, in order. */
+export function providerOrder() {
+  const available = [claudeKey() && 'claude', geminiKey() && 'gemini'].filter(Boolean);
   const forced = (process.env.ASSISTANT_PROVIDER || '').toLowerCase();
-  if (forced === 'gemini' && geminiKey()) return 'gemini';
-  if (forced === 'claude' && claudeKey()) return 'claude';
-  if (forced === 'parser') return 'parser';
-  return geminiKey() ? 'gemini' : claudeKey() ? 'claude' : 'parser';
+  if (forced === 'parser') return [];
+  if (available.includes(forced)) return [forced, ...available.filter((p) => p !== forced)];
+  return available;
 }
-export const llmEnabled = () => provider() !== 'parser';
-const modelName = () => ({ gemini: geminiModel(), claude: CLAUDE_MODEL, parser: 'built-in parser' }[provider()]);
+export const provider = () => providerOrder()[0] || 'parser';
+export const llmEnabled = () => providerOrder().length > 0;
+const MODEL_OF = { claude: () => CLAUDE_MODEL, gemini: () => geminiModel() };
+const modelName = () => {
+  const [first, backup] = providerOrder();
+  if (!first) return 'built-in parser';
+  return backup ? `${MODEL_OF[first]()} (backup: ${MODEL_OF[backup]()})` : MODEL_OF[first]();
+};
+
+const withTimeout = (promise, ms, label) => Promise.race([promise, new Promise((_, reject) =>
+  setTimeout(() => reject(Object.assign(new Error(`${label} did not answer within ${ms / 1000} s`), { timeout: true })), ms))]);
 
 let client = null;
-const claude = () => (client ??= new Anthropic());
+const claude = () => (client ??= new Anthropic({ timeout: LLM_TIMEOUT_MS, maxRetries: 1 }));
 let geminiClient = null;
 const gemini = () => (geminiClient ??= new GoogleGenAI({ apiKey: geminiKey() }));
-/** Tests swap in a stub client so the tool loop can be checked without a network call. */
+/** Tests swap in stub clients so the tool loops can be checked without network calls. */
 export const _setGeminiClientForTests = (c) => { geminiClient = c; };
+export const _setClaudeClientForTests = (c) => { client = c; };
 
 // ------------------------------------------------------------------ conversation state
 // history = Claude-format turns, contents = Gemini-format turns. Both are append-only.
@@ -260,7 +274,8 @@ const TOOLS = [
           type: { type: 'string', enum: ACTION_TYPES, description: 'set_room_availability(room_id, usable) | add_faculty_leave(faculty_id, date, session FN/AN/BOTH) | add_holiday(date) | move_subject(subject_code, date, session FN/AN; pins it) | unpin_subject(subject_code) | set_last_exam_date(date)' },
           room_id: nullable('string'), usable: nullable('boolean'), faculty_id: nullable('string'),
           subject_code: nullable('string'), date: nullable('string', { description: 'YYYY-MM-DD' }),
-          session: nullable('string', { enum: ['FN', 'AN', 'BOTH', null] }),
+          // "FN/AN/BOTH or null" must be anyOf: a typed enum may not contain null in a strict schema.
+          session: { anyOf: [{ type: 'string', enum: ['FN', 'AN', 'BOTH'] }, { type: 'null' }] },
         }),
       },
     }),
@@ -274,6 +289,8 @@ You talk with the exam cell admin about the ${c.exam_cycle}: exam window ${c.sta
 
 ExamGrid builds the plan automatically: a DSatur graph-colouring timetable (no student has two papers in one session; regular students at most one exam a day; supply students may write FN+AN on one day as a last resort), a turnout model, Timefold seating (no same-paper neighbours, ground-floor needs) and Timefold invigilation (never own subject, never on leave, duty caps, fair load).
 
+How seating works (use this to explain room fill): every room is a chessboard of seats, and each paper sits on one colour only, so two students of the same paper are never side by side or front-to-back. A room holding a single paper is therefore at most about half full - by design. Rooms fill up when two or more papers share them; get_session shows how many papers each room holds.
+
 How to work:
 - Look things up with the tools before stating facts about the plan; never guess codes, IDs, dates or numbers.
 - When the admin reports a problem or asks for a change that the actions can express (room unavailable/available, faculty leave, holiday, move or unpin a subject, change the last exam date), call propose_changes. Resolve names to IDs first (find_faculty / find_subject); if a name or subject is ambiguous, ask which one. For a subject move, call check_subject_move first and mention what it will displace.
@@ -283,12 +300,16 @@ How to work:
 - Dates the admin gives without a year are in ${c.start_date.slice(0, 4)}. Answer briefly and concretely, in plain language, using short lists where helpful.`;
 }
 
+/**
+ * Each chat function returns { ok: true } once it has answered, or { ok: false, reason } when the
+ * provider could not answer at all - then the next provider in providerOrder() gets the message.
+ */
 async function chatWithClaude(text) {
   state.history.push({ role: 'user', content: text });
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     let response;
     try {
-      response = await claude().beta.messages.create({
+      response = await withTimeout(claude().beta.messages.create({
         model: CLAUDE_MODEL,
         max_tokens: 16000,
         betas: ['server-side-fallback-2026-07-01'],
@@ -298,28 +319,32 @@ async function chatWithClaude(text) {
         system: systemPrompt(),
         tools: TOOLS,
         messages: state.history,
-      });
+      }), LLM_TIMEOUT_MS, 'Claude');
     } catch (e) {
-      const status = e instanceof Anthropic.APIError ? ` (${e.status})` : '';
-      const hint = e instanceof Anthropic.AuthenticationError ? ' Check the API key in web/server/.env.'
-        : e instanceof Anthropic.RateLimitError ? ' Rate limited - try again in a minute.' : '';
-      // Drop the unanswered user turn so the history stays valid for the next try.
-      if (round === 0) state.history.pop();
-      addItem({ kind: 'error', text: `Claude request failed${status}: ${e.message}.${hint}` });
-      return;
+      const reason = e instanceof Anthropic.AuthenticationError ? 'the Claude API key was rejected'
+        : e instanceof Anthropic.RateLimitError ? 'Claude is rate limited'
+          : e instanceof Anthropic.APIError ? `Claude error ${e.status}` : e.timeout ? e.message : `Claude unreachable (${e.message})`;
+      if (round === 0) {
+        state.history.pop();  // keep the history valid for the next try
+        return { ok: false, reason };
+      }
+      addItem({ kind: 'error', text: `Claude stopped part-way: ${reason}. Ask again in a moment.` });
+      return { ok: true };
     }
     state.history.push({ role: 'assistant', content: response.content });
 
     if (response.stop_reason === 'refusal') {
-      addItem({ kind: 'error', text: 'Claude declined to answer this request.' });
-      return;
+      // Nothing was said; let the backup model try the same message.
+      if (round === 0) return { ok: false, reason: 'Claude declined this request' };
+      addItem({ kind: 'error', text: 'Claude declined to continue this request.' });
+      return { ok: true };
     }
     const said = response.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n').trim();
     const calls = response.content.filter((b) => b.type === 'tool_use');
     if (said) addItem({ kind: 'assistant', text: said });
     if (response.stop_reason !== 'tool_use' || !calls.length) {
       if (response.stop_reason === 'max_tokens') addItem({ kind: 'error', text: 'The reply was cut off (too long).' });
-      return;
+      return { ok: true };
     }
 
     const results = [];
@@ -332,6 +357,7 @@ async function chatWithClaude(text) {
     save();
   }
   addItem({ kind: 'error', text: 'Stopped after too many lookups - please ask a narrower question.' });
+  return { ok: true };
 }
 
 /** Run one tool call from either model; lookups answer directly, propose_changes only proposes. */
@@ -363,25 +389,32 @@ async function chatWithGemini(text) {
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     let response;
     try {
-      response = await gemini().models.generateContent({
+      response = await withTimeout(gemini().models.generateContent({
         model: geminiModel(),
         contents: state.contents,
         config: { systemInstruction: systemPrompt(), tools: GEMINI_TOOLS },
-      });
+      }), LLM_TIMEOUT_MS, 'Gemini');
     } catch (e) {
-      if (round === 0) state.contents.pop();  // keep the history valid for the next try
       const status = e instanceof GeminiApiError ? e.status : null;
-      const hint = status === 429 ? ' The free-tier limit was reached - wait a minute (or for tomorrow\'s quota) and try again.'
-        : status === 400 || status === 403 ? ' Check GEMINI_API_KEY and GEMINI_MODEL in web/server/.env.' : '';
-      addItem({ kind: 'error', text: `Gemini request failed${status ? ` (${status})` : ''}: ${e.message}.${hint}` });
-      return;
+      const reason = status === 429 ? 'the Gemini free-tier limit was reached - wait a minute (or for tomorrow\'s quota)'
+        : status === 400 || status === 403 ? `Gemini rejected the request (${status}) - check GEMINI_API_KEY and GEMINI_MODEL in web/server/.env`
+          : status ? `Gemini error ${status}` : e.timeout ? e.message : `Gemini unreachable (${e.message})`;
+      if (round === 0) {
+        state.contents.pop();  // keep the history valid for the next try
+        return { ok: false, reason };
+      }
+      addItem({ kind: 'error', text: `Gemini stopped part-way: ${reason}.` });
+      return { ok: true };
     }
     const content = response.candidates?.[0]?.content;
     if (!content?.parts?.length) {
-      if (round === 0) state.contents.pop();
       const why = response.promptFeedback?.blockReason || response.candidates?.[0]?.finishReason || 'no answer';
-      addItem({ kind: 'error', text: `Gemini did not answer (${why}). Try rephrasing.` });
-      return;
+      if (round === 0) {
+        state.contents.pop();
+        return { ok: false, reason: `Gemini did not answer (${why})` };
+      }
+      addItem({ kind: 'error', text: `Gemini did not finish (${why}). Try rephrasing.` });
+      return { ok: true };
     }
     // Append the model turn exactly as received - it carries the thought signatures
     // Gemini needs to continue a function-calling conversation.
@@ -391,7 +424,7 @@ async function chatWithGemini(text) {
     if (said) addItem({ kind: 'assistant', text: said });
     if (!calls.length) {
       if (response.candidates?.[0]?.finishReason === 'MAX_TOKENS') addItem({ kind: 'error', text: 'The reply was cut off (too long).' });
-      return;
+      return { ok: true };
     }
     const parts = calls.map((call) => {
       const result = runTool(call.name, call.args);
@@ -402,6 +435,7 @@ async function chatWithGemini(text) {
     save();
   }
   addItem({ kind: 'error', text: 'Stopped after too many lookups - please ask a narrower question.' });
+  return { ok: true };
 }
 
 const activityLabel = (name, input) => ({
@@ -531,10 +565,19 @@ export async function sendMessage(text, by, context = null) {
   busy = true;
   try {
     addItem({ kind: 'user', text, by });
-    const which = provider();
-    if (which === 'gemini') await chatWithGemini(text + describeContext(context));
-    else if (which === 'claude') await chatWithClaude(text + describeContext(context));
-    else {
+    const prompt = text + describeContext(context);
+    const NAMES = { claude: 'Claude', gemini: 'Gemini' };
+    const RUN = { claude: chatWithClaude, gemini: chatWithGemini };
+    let answered = false;
+    const failures = [];
+    for (const p of providerOrder()) {
+      if (failures.length) addItem({ kind: 'activity', text: `${failures.at(-1)} - asking ${NAMES[p]} instead` });
+      const result = await RUN[p](prompt);
+      if (result.ok) { answered = true; break; }
+      failures.push(result.reason);
+    }
+    if (!answered) {
+      if (failures.length) addItem({ kind: 'activity', text: `${failures.at(-1)} - using the built-in parser` });
       // The parser has no idea what "this room" is, so fill in the room on screen.
       const room = context?.room_id && /\b[A-Z]{2}-\d{3}\b/i.test(text) === false ? String(context.room_id) : null;
       chatWithParser(room ? text.replace(/\b(this|the current|that) room\b/i, `room ${room}`) : text);
