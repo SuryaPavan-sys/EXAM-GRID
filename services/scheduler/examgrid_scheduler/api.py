@@ -94,6 +94,26 @@ def timetable(req: TimetableRequest) -> TimetableResponse:
     return _run(inp, req.seed)
 
 
+@app.post("/turnout/demo/{scale}")
+def turnout_demo(scale: Literal["small", "medium", "full"], seed: int = 0) -> dict:
+    """Timetable + turnout forecast for a bundled SRKR dataset: backtest, learned effects, savings."""
+    import csv
+
+    import pandas as pd
+
+    from .turnout import forecast, train
+
+    folder = DATA_ROOT / scale
+    if not folder.exists():
+        raise HTTPException(status_code=404, detail=f"dataset {scale} not found; run scripts/generate_datasets.py")
+    read = lambda name: list(csv.DictReader((folder / name).open(newline="", encoding="utf-8")))
+    trained = train(pd.read_csv(folder / "attendance_history.csv"))
+    timetable = _run(load_dataset(folder), seed).timetable
+    result = forecast(trained, timetable, read("registrations.csv"), read("students.csv"), read("rooms.csv"))
+    return dict(model=trained.model_name, test_cycle=trained.test_cycle, backtest=trained.backtest,
+                learned_effects=trained.effects, **result)
+
+
 @app.post("/timetable/demo/{scale}", response_model=TimetableResponse)
 def timetable_demo(scale: Literal["small", "medium", "full"], seed: int = 0) -> TimetableResponse:
     """Build a timetable from one of the bundled SRKR datasets (handy for demos)."""

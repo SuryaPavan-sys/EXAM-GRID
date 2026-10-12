@@ -138,3 +138,11 @@ def test_api_demo_dataset():
     res = client.post("/timetable/demo/small")
     assert res.status_code == 200
     assert res.json()["report"]["ok"]
+
+
+def test_api_turnout_demo():
+    res = client.post("/turnout/demo/small")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["summary"]["seats_booked"] <= body["summary"]["papers_registered"]
+    assert "AN vs FN" in body["learned_effects"]

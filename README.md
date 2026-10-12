@@ -47,7 +47,9 @@ React (UI)  →  Node.js + Express (API, auth)  →  MongoDB
 - [x] SRKR datasets on the real R23 curriculum, as CSV and Excel: [`data/`](data/README.md)
 - [x] Timetable service (DSatur + seat capacity + local search, FastAPI): [`services/scheduler/`](services/scheduler/README.md).
   On the full SRKR data: 7,551 students, 280 subjects, **0 clashes**, 18 days, 1.2 s.
-- [ ] Turnout prediction model
+- [x] Turnout prediction: ridge regression, backtested on an unseen cycle (0.96% session error).
+  It rediscovers the true attendance effects and books about 2% fewer seats, rooms and
+  invigilator duties with a safety margin.
 - [ ] Seating and invigilation solver
 - [ ] API, dashboard and seat editor
 - [ ] Hall tickets, room charts and deployment
