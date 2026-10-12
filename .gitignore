@@ -35,6 +35,7 @@ output/
 # Claude Code local settings
 .claude/settings.local.json
 
-# Website build output and seat-edit logs
+# Website build output and runtime data (messages)
 web/client/dist/
+web/server/var/
 

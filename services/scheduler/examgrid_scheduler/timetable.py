@@ -56,9 +56,23 @@ def generate_timetable(inp: ExamInput, seed: int = 0) -> TimetableResult:
 
     slot_idx = {code: placed[c] for code, c in col.colour_of.items()}
     size = {code: len(r) for code, r in inp.students_of.items()}
+
+    # Exams the exam cell pinned to a slot override the search; refine() then moves
+    # whatever now clashes with them and never moves the pinned ones.
+    pins = {}
+    for code, (d, session) in inp.fixed_slots.items():
+        if code not in slot_idx:
+            continue
+        if d not in inp.exam_dates or session not in inp.sessions:
+            raise TimetableError(f"{code} is pinned to {d} {session}, which is not an exam session in the window.",
+                                 {"subject": code, "date": d.isoformat(), "session": session})
+        pins[code] = (inp.exam_dates.index(d), inp.sessions.index(session))
+        slot_idx[code] = pins[code]
+
     slot_idx, refine_before, refine_after = refine(
         slot_idx, g, size, inp.exam_dates, len(inp.sessions), inp.seats_per_session,
-        backlog_same_day=backlog_cost, allow_backlog_same_day=inp.allow_backlog_same_day, seed=seed)
+        backlog_same_day=backlog_cost, allow_backlog_same_day=inp.allow_backlog_same_day, seed=seed,
+        frozen=set(pins))
     t_refine = time.perf_counter()
 
     slots = {code: (inp.exam_dates[d], inp.sessions[k]) for code, (d, k) in slot_idx.items()}
@@ -74,6 +88,8 @@ def generate_timetable(inp: ExamInput, seed: int = 0) -> TimetableResult:
                          backlog=len(inp.students_of[code]) - len(inp.regular_of.get(code, ()))))
 
     report = validate(slots, inp)
+    report["fixed_slots"] = {code: {"date": inp.exam_dates[d].isoformat(), "session": inp.sessions[k],
+                                    "honoured": slot_idx[code] == (d, k)} for code, (d, k) in pins.items()}
     report["algorithm"] = dict(
         conflict_graph=graph_stats(g),
         dsatur_session_groups=col.n_colours,

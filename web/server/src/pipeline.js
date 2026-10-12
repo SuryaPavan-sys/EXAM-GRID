@@ -35,14 +35,28 @@ const runStep = (step, view) => new Promise((resolve) => {
   });
 });
 
+let current = null;
+
+/** Starts a run (or joins the one in progress) and returns its state immediately. */
 export async function runPipeline() {
-  if (state.running) return state;
+  startRun();
+  return state;
+}
+
+/** Starts a run (or joins the one in progress) and resolves when it has finished. */
+export async function runPipelineAndWait() {
+  await startRun();
+  return state;
+}
+
+function startRun() {
+  if (state.running && current) return current;
   if (!fs.existsSync(PY) || !fs.existsSync(JAR)) {
     throw Object.assign(new Error('Python venv or solver jar missing - see README setup'), { status: 500 });
   }
   state = { running: true, steps: STEPS.map((s) => ({ name: s.name, status: 'waiting', log: '' })),
     startedAt: new Date().toISOString(), finishedAt: null };
-  (async () => {
+  current = (async () => {
     for (let i = 0; i < STEPS.length; i++) {
       if (!(await runStep(STEPS[i], state.steps[i]))) break;
     }
@@ -53,6 +67,7 @@ export async function runPipeline() {
     }
     state.running = false;
     state.finishedAt = new Date().toISOString();
+    state.ok = state.steps.every((s) => s.status === 'done');
   })();
-  return state;
+  return current;
 }

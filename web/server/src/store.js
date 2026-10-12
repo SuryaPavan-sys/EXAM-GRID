@@ -27,6 +27,7 @@ class Store {
       this.teaches.get(t.faculty_id).add(t.subject_code);
     }
     this.branches = readCsv(path.join(DATA_DIR, 'branches.csv'));
+    this.leave = readCsv(path.join(DATA_DIR, 'faculty_unavailability.csv'));
 
     this.timetable = readCsv(path.join(OUT_DIR, 'timetable.csv')).map((t) => ({ ...t, students: +t.students,
       regular: +t.regular, backlog: +t.backlog }));

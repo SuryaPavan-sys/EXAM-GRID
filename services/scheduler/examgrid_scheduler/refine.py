@@ -27,11 +27,14 @@ from .spread import BACKLOG_SAME_DAY, GAP_COST
 def refine(slot_of: dict[str, tuple[int, int]], g: nx.Graph, size: dict[str, int],
            dates: list[date], n_sessions: int, seats: int,
            backlog_same_day: int = BACKLOG_SAME_DAY, allow_backlog_same_day: bool = True,
-           seed: int = 0, max_sweeps: int = 50) -> tuple[dict, int, int]:
+           seed: int = 0, max_sweeps: int = 50, frozen: set[str] | None = None) -> tuple[dict, int, int]:
     """Improve `slot_of` (subject -> (date index, session index)) in place.
 
+    Subjects in `frozen` (pinned by the exam cell) never move. If a pin breaks a hard
+    rule for some other subject, that subject is first repaired into a legal slot.
     Returns (slot_of, cost before, cost after).
     """
+    frozen = frozen or set()
     rng = random.Random(seed)
     load: dict[tuple[int, int], int] = defaultdict(int)
     for s, slot in slot_of.items():
@@ -63,8 +66,23 @@ def refine(slot_of: dict[str, tuple[int, int]], g: nx.Graph, size: dict[str, int
         return True
 
     total = lambda: sum(pair(a, b, slot_of[a], slot_of[b]) for a, b in g.edges)
+
+    # Repair: anything whose current slot is illegal (because of a pin) moves to the
+    # cheapest legal slot, biggest subjects first since they are hardest to place.
+    for s in sorted(slot_of, key=lambda x: (-size[x], x)):
+        if s in frozen:
+            continue
+        here = slot_of[s]
+        load[here] -= size[s]
+        if not allowed(s, here):
+            options = [slot for slot in all_slots if allowed(s, slot)]
+            if options:
+                here = min(options, key=lambda slot: (cost_of(s, slot), slot))
+                slot_of[s] = here
+        load[here] += size[s]
+
     before = total()
-    subjects = sorted(slot_of)
+    subjects = sorted(set(slot_of) - frozen)
     for _ in range(max_sweeps):
         moved = False
         rng.shuffle(subjects)

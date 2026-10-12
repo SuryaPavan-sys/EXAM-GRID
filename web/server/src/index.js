@@ -1,6 +1,8 @@
+import './env.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import express from 'express';
+import { applyProposal, getConversation, rejectProposal, resetConversation, sendMessage, undo } from './assistant.js';
 import { demoAccounts, login, requireAuth, ticketSignature } from './auth.js';
 import { validateCsv } from './importer.js';
 import { CLIENT_DIST, DATA_DIR, SCALE } from './paths.js';
@@ -181,6 +183,17 @@ api.get('/import/sample/:type', admin, (req, res) => {
   if (!/^(students|registrations|rooms)$/.test(req.params.type) || !fs.existsSync(file)) return res.status(404).json({ error: 'no sample' });
   res.json({ name, csv: fs.readFileSync(file, 'utf8') });
 });
+
+// ------------------------------------------------------------------ Plan Assistant (exam cell only)
+const send = (fn) => async (req, res) => {
+  try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: e.message }); }
+};
+api.get('/assistant', admin, send(() => getConversation()));
+api.post('/assistant/message', admin, send((req) => sendMessage(req.body.text, req.user.name)));
+api.post('/assistant/proposals/:id/apply', admin, send((req) => applyProposal(req.params.id, req.user.name)));
+api.post('/assistant/proposals/:id/reject', admin, send((req) => rejectProposal(req.params.id)));
+api.post('/assistant/undo', admin, send((req) => undo(req.user.name)));
+api.post('/assistant/reset', admin, send(() => resetConversation()));
 
 api.get('/pipeline', admin, (req, res) => res.json(pipelineState()));
 api.post('/pipeline/run', admin, wrap(async (req, res) => res.json(await runPipeline())));

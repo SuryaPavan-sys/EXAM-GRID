@@ -95,8 +95,14 @@ public final class BatchRunner {
             futures.put(e.getKey(), pool.submit(() -> seating.seat(e.getValue(), rooms)));
         }
         Map<String, SeatingService.Result> seated = new LinkedHashMap<>();
+        SeatingService patient = new SeatingService(Duration.ofSeconds(seconds * 3L), Duration.ofSeconds(Math.max(4, seconds)));
         for (Map.Entry<String, Future<SeatingService.Result>> e : futures.entrySet()) {
             SeatingService.Result r = e.getValue().get();
+            // The search is time-limited; a very tight session gets two more, longer attempts.
+            for (int retry = 1; retry <= 2 && !Boolean.TRUE.equals(r.checks().get("ok")); retry++) {
+                System.out.printf("  %s  not fully solved (%s), retrying with more time (%d/2)%n", e.getKey(), r.score(), retry);
+                r = patient.seat(bySession.get(e.getKey()), rooms);
+            }
             seated.put(e.getKey(), r);
             Map<String, Object> c = r.checks();
             System.out.printf("  %s  %5d students  %3d rooms  fill %4.0f%%  neighbours %d  ground %d  %s  %s%n",

@@ -96,6 +96,24 @@ def test_too_few_sessions_is_rejected():
         generate_timetable(build_input([], regs(*pairs), rooms(100), CONFIG))
 
 
+def test_pinned_subject_stays_put_and_the_rest_moves_around_it():
+    # s1 writes A and B (regular) -> they may not share a day; pin both A and C to Wed FN.
+    config = {**CONFIG, "fixed_slots": {"A": {"date": "2026-11-18", "session": "FN"},
+                                        "C": {"date": "2026-11-18", "session": "FN"}}}
+    pairs = [("s1", "A"), ("s1", "B"), ("s2", "C"), ("s3", "B")]
+    result = generate_timetable(build_input([], regs(*pairs), rooms(100), config))
+    slots = {r["subject_code"]: (r["exam_date"], r["session"]) for r in result.rows}
+    assert slots["A"] == ("2026-11-18", "FN") and slots["C"] == ("2026-11-18", "FN")
+    assert slots["B"][0] != "2026-11-18"
+    assert result.report["ok"] and all(p["honoured"] for p in result.report["fixed_slots"].values())
+
+
+def test_pin_outside_window_is_rejected():
+    config = {**CONFIG, "fixed_slots": {"A": {"date": "2026-11-22", "session": "FN"}}}   # a Sunday
+    with pytest.raises(TimetableError):
+        generate_timetable(build_input([], regs(("s1", "A")), rooms(100), config))
+
+
 def test_validator_catches_a_clash():
     inp = build_input([], regs(("s1", "A"), ("s1", "B")), rooms(100), CONFIG)
     same = (date(2026, 11, 16), "FN")

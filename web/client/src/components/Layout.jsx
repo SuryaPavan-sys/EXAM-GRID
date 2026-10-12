@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
 
 const NAV = {
-  admin: [['/admin', 'Dashboard'], ['/admin/timetable', 'Timetable'], ['/admin/seating', 'Seating'],
+  admin: [['/admin', 'Dashboard'], ['/admin/assistant', 'Plan Assistant'], ['/admin/timetable', 'Timetable'], ['/admin/seating', 'Seating'],
     ['/admin/duties', 'Invigilation'], ['/admin/turnout', 'Turnout model'], ['/admin/data', 'Data & pipeline']],
   faculty: [['/faculty', 'My duties'], ['/faculty/timetable', 'Timetable']],
   student: [['/student', 'My exams'], ['/student/timetable', 'Timetable']],

@@ -23,6 +23,8 @@ class ExamInput:
     # students may, when this is True - the usual practice when papers from
     # several years have to fit one exam window.
     allow_backlog_same_day: bool = True
+    # Subjects the exam cell has pinned to a slot: code -> (date, session code).
+    fixed_slots: dict[str, tuple[date, str]] = field(default_factory=dict)
 
     @property
     def papers_of(self) -> dict[str, set[str]]:
@@ -75,6 +77,8 @@ def build_input(subjects: list[dict], registrations: list[dict], rooms: list[dic
         exam_dates=exam_dates_from_config(config),
         sessions=[s["code"] for s in config.get("sessions", [{"code": "FN"}, {"code": "AN"}])],
         allow_backlog_same_day=bool(config.get("allow_backlog_same_day", True)),
+        fixed_slots={code: (date.fromisoformat(v["date"]), v["session"])
+                     for code, v in (config.get("fixed_slots") or {}).items()},
     )
 
 

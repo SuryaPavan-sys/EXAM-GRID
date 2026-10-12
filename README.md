@@ -46,6 +46,15 @@ rule with an independent checker.
 5. **Website.** Dashboard, timetable, seating editor (drag and drop, rules checked live), duties,
    turnout model, CSV import validation, one-click re-planning, student seat lookup, and hall
    tickets with a QR verification code.
+6. **Plan Assistant (LLM chat).** The exam cell describes a problem or change in plain words, for
+   example "Room CS-204 has no power, and SRKR0012 can't come on 2 Dec FN".
+   - With Claude (`claude-opus-5-5`, tool use), the assistant looks up the plan, checks the
+     request, and proposes changes. It can only propose a fixed set of validated actions: room
+     availability, faculty leave, holiday, move/pin an exam, last exam date.
+   - **Apply** backs up the data, re-runs timetable → turnout → seating → duties, and shows a
+     before/after table. **Undo** restores the backup and re-plans.
+   - Without an API key, a built-in parser handles clear commands. Put `ANTHROPIC_API_KEY` in
+     `web/server/.env` (see `.env.example`) to enable Claude.
 
 ## Run the website
 

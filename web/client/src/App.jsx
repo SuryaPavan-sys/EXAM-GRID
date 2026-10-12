@@ -9,6 +9,7 @@ import Seating from './pages/admin/Seating.jsx';
 import Duties from './pages/admin/Duties.jsx';
 import Turnout from './pages/admin/Turnout.jsx';
 import DataPage from './pages/admin/DataPage.jsx';
+import Assistant from './pages/admin/Assistant.jsx';
 import MyExams from './pages/student/MyExams.jsx';
 import MyDuties from './pages/faculty/MyDuties.jsx';
 
@@ -34,6 +35,7 @@ export default function App() {
       <Route path="/admin/duties" element={<Protected role="admin"><Duties /></Protected>} />
       <Route path="/admin/turnout" element={<Protected role="admin"><Turnout /></Protected>} />
       <Route path="/admin/data" element={<Protected role="admin"><DataPage /></Protected>} />
+      <Route path="/admin/assistant" element={<Protected role="admin"><Assistant /></Protected>} />
       <Route path="/student" element={<Protected role="student"><MyExams /></Protected>} />
       <Route path="/student/timetable" element={<Protected role="student"><Timetable /></Protected>} />
       <Route path="/faculty" element={<Protected role="faculty"><MyDuties /></Protected>} />
