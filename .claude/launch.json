@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "scheduler",
+      "runtimeExecutable": "services/scheduler/.venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "examgrid_scheduler.api:app", "--port", "8001", "--app-dir", "services/scheduler"],
+      "port": 8001
+    }
+  ]
+}

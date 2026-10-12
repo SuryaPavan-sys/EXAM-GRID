@@ -44,8 +44,9 @@ React (UI)  →  Node.js + Express (API, auth)  →  MongoDB
 
 ## Status
 
-- [x] Synthetic SRKR-style datasets: [`data/`](data/README.md)
-- [ ] Timetable service (DSatur + seat capacity)
+- [x] SRKR datasets on the real R23 curriculum, as CSV and Excel: [`data/`](data/README.md)
+- [x] Timetable service (DSatur + seat capacity + local search, FastAPI): [`services/scheduler/`](services/scheduler/README.md).
+  On the full SRKR data: 7,551 students, 280 subjects, **0 clashes**, 18 days, 1.2 s.
 - [ ] Turnout prediction model
 - [ ] Seating and invigilation solver
 - [ ] API, dashboard and seat editor

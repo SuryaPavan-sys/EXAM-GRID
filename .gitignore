@@ -25,5 +25,8 @@ target/
 .DS_Store
 Thumbs.db
 
+# Generated timetables / reports (rebuild with the CLI)
+output/
+
 # Claude Code local settings
 .claude/settings.local.json
